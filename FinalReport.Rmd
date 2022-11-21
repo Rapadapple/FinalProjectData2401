@@ -45,3 +45,27 @@ energy %>%
   labs(title = "Texas total power generation per year")
 ```
 
+
+
+```{r}
+energy %>% 
+  filter(producer == "Total Electric Power Industry", state != "US-TOTAL") %>% 
+  ggplot() +
+  geom_point(aes(x = state, y = generation, color = source))
+```
+```{r}
+energy %>% 
+  filter(producer == "Total Electric Power Industry", state != "US-TOTAL", generation < -5000) %>% 
+  ggplot() +
+  geom_point(aes(x = state, y = generation, color = source))
+```
+
+```{r}
+energy %>% 
+  filter(producer == "Total Electric Power Industry", state == "TX") %>% 
+  ggplot() + 
+  geom_point(aes(x = month, y = generation, color = source)) +
+  geom_smooth(aes(x = month, y = generation, color = source)) +
+  labs(title = "Texas total power generation per month")
+```
+
