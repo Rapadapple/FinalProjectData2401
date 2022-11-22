@@ -57,7 +57,8 @@ energy %>%
 energy %>% 
   filter(producer == "Total Electric Power Industry", state != "US-TOTAL", generation < -5000) %>% 
   ggplot() +
-  geom_point(aes(x = state, y = generation, color = source))
+  geom_point(aes(x = state, y = generation, color = source)) +
+  labs(title = "States with negative power generation (<-5000)")
 ```
 
 ```{r}
