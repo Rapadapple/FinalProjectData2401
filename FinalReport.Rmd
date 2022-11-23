@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(tidyverse)
 library(ggplot2)
+library(plotly)
 ```
 
 ```{r}
@@ -85,4 +86,22 @@ year between now and 2025 and 60 GW per year from 2025-2030.
 https://www.renewable-ei.org/pdfdownload/activities/01_Key_AlejandroMoreno.pdf
 
 
+```{r}
+total_energy = energy %>% filter(producer == "Total Electric Power Industry", state != "US-TOTAL") 
+fig = energy %>% 
+  filter(producer == "Total Electric Power Industry", state != "US-TOTAL") %>% 
+  group_by(year, month, state) %>% 
+  summarize(total = sum(generation)/2) %>% 
+  right_join(total_energy) %>%
+  filter(source != "Total") %>% 
+  ggplot() +
+  geom_col(aes(x = state, y = generation, fill = source))
+
+ggplotly(fig, tooltip = "y")
+```
+
+```{r}
+energy %>% filter(producer == "Total Electric Power Industry", state != "US-TOTAL", source != "Total") %>% 
+  group_by(year, month)
+```
 
