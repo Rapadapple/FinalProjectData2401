@@ -70,3 +70,19 @@ energy %>%
   labs(title = "Texas total power generation per month")
 ```
 
+```{r}
+energy %>% 
+  ggplot() +
+  geom_col(aes(x = year, y = generation, fill = source)) +
+  facet_wrap(vars(source))
+  
+```
+
+
+
+US goal is to install an average of 30 GW of solar capacity per
+year between now and 2025 and 60 GW per year from 2025-2030.
+https://www.renewable-ei.org/pdfdownload/activities/01_Key_AlejandroMoreno.pdf
+
+
+
