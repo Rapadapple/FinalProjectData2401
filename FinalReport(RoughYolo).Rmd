@@ -1,0 +1,114 @@
+---
+title: "Data2401Final"
+author: "Kevin Sheard"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+
+```{r}
+energy = read_csv("archive/organised_Gen.csv")
+
+```
+
+
+```{r}
+colnames(energy) = c("ID", "year", "month", "state", "producer", "source", "generation")
+energy = energy %>% select(-`ID`)
+```
+
+```{r}
+energy %>% count(producer)
+```
+
+```{r}
+energy %>% 
+  filter(producer == "Total Electric Power Industry", state == "US-TOTAL") %>% 
+  ggplot() + 
+  geom_point(aes(x = year, y = generation, color = source)) +
+  geom_smooth(aes(x = year, y = generation, color = source)) +
+  labs(title = "US total power generation per year")
+  
+```
+```{r}
+energy %>% 
+  filter(producer == "Total Electric Power Industry", state == "US-TOTAL") %>% 
+  ggplot() + 
+  geom_col(aes(x = year, y = generation, color = source)) +
+  labs(title = "US total power generation per year")
+```
+
+```{r}
+energy %>% 
+  filter(producer == "Total Electric Power Industry", state == "TX") %>% 
+  ggplot() + 
+  geom_point(aes(x = year, y = generation, color = source)) +
+  geom_smooth(aes(x = year, y = generation, color = source)) +
+  labs(title = "Texas total power generation per year")
+```
+
+
+
+```{r}
+energy %>% 
+  filter(producer == "Total Electric Power Industry", state != "US-TOTAL") %>% 
+  ggplot() +
+  geom_point(aes(x = state, y = generation, color = source)) +
+  coord_flip()
+```
+```{r}
+energy %>% 
+  filter(producer == "Total Electric Power Industry", state != "US-TOTAL", generation < -5000) %>% 
+  ggplot() +
+  geom_point(aes(x = state, y = generation, color = source)) +
+  coord_flip()
+```
+
+
+
+```{r}
+energy %>% 
+  filter(producer == "Total Electric Power Industry", state == "TX") %>% 
+  ggplot() + 
+  geom_point(aes(x = month, y = generation, color = source)) +
+  geom_smooth(aes(x = month, y = generation, color = source)) +
+  labs(title = "Texas total power generation per month")
+```
+Largest energy producers by state.
+```{r}
+energy %>% 
+  filter(producer == "Total Electric Power Industry", state == "US-TOTAL") %>% 
+  ggplot() + 
+  geom_point(aes(x = month, y = generation, color = source)) +
+  geom_smooth(aes(x = month, y = generation, color = source)) +
+  labs(title = "US total power generation per year") +
+  scale_x_continuous(breaks=seq(1,12,by=1))
+
+```
+```{r}
+
+energy %>% 
+  filter(producer == "Electric Generators, Electric Utilities", state == "US-TOTAL") %>% 
+  ggplot() + 
+  geom_point(aes(x = year, y = generation, color = source)) +
+  geom_smooth(aes(x = year, y = generation, color = source)) +
+  labs(title = "US total power generation per year")
+```
+```{r}
+energy %>% 
+  filter(producer == "Electric Generators, Electric Utilities", state == "US-TOTAL") %>% 
+  ggplot() + 
+  geom_col(aes(x = year, y = generation, color = source)) +
+  geom_smooth(aes(x = year, y = generation, color = source)) +
+  labs(title = "US total power generation per year")
+```
+
