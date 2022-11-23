@@ -26,8 +26,19 @@ colnames(energy) = c("ID", "year", "month", "state", "producer", "source", "gene
 energy = energy %>% select(-`ID`)
 ```
 
+
+For John
 ```{r}
 energy %>% count(producer)
+
+
+energy
+energy %>% 
+  filter(producer == 'Electric Generators, Electric Utilities', state == 'TX') %>% 
+  count(source) %>% 
+  ggplot() +
+  geom_col(aes(x = source, y = n, color = source)) +
+  coord_flip()
 ```
 
 ```{r}
@@ -110,5 +121,10 @@ energy %>%
   geom_col(aes(x = year, y = generation, color = source)) +
   geom_smooth(aes(x = year, y = generation, color = source)) +
   labs(title = "US total power generation per year")
+```
+
+Coal Percentage
+```{r}
+
 ```
 
