@@ -101,7 +101,27 @@ ggplotly(fig, tooltip = "y")
 ```
 
 ```{r}
-energy %>% filter(producer == "Total Electric Power Industry", state != "US-TOTAL", source != "Total") %>% 
-  group_by(year, month)
+energy %>% filter(producer == "Total Electric Power Industry", state != "US-TOTAL", source == "Solar Thermal and Photovoltaic") %>%
+  ggplot() +
+  geom_col(aes(x= state, y= generation)) +
+  coord_flip()
+```
+
+```{r}
+energy %>% filter(producer == "Total Electric Power Industry", state != "US-TOTAL", source == "Solar Thermal and Photovoltaic", year != 2022) %>% group_by(year) %>% 
+  summarize(total_generation = sum(generation)) %>% 
+  ggplot() +
+  geom_col(aes(x= year, y= total_generation)) +
+  geom_smooth(aes(x = year, y= total_generation)) +
+  labs(title = "Total Solar Power Generation Per Year", x = "Year", y = "Power Generation")
+```
+
+```{r}
+energy %>% filter(producer == "Total Electric Power Industry", state != "US-TOTAL", source == "Wind", year != 2022) %>% group_by(year) %>% 
+  summarize(total_generation = sum(generation)) %>% 
+  ggplot() +
+  geom_col(aes(x= year, y= total_generation)) +
+  geom_smooth(aes(x = year, y= total_generation)) +
+  labs(title = "Total Wind Power Generation Per Year", x = "Year", y = "Power Generation")
 ```
 
