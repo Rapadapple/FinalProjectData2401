@@ -1,0 +1,227 @@
+---
+title: "Final Project"
+author: John Beall
+date: November 27, 2022
+output: slidy_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+# Load tidyverse for manipulating data
+#Load ggplot2, and plotly for graphing data
+library(tidyverse, warn.conflicts = F)
+library(ggplot2, warn.conflicts = F)
+library(plotly, warn.conflicts = F)
+```
+
+```{r}
+#Read in the energy data
+energy = read_csv("archive/organised_Gen.csv")
+glimpse(energy)
+
+```
+
+
+```{r}
+#renaming the columns and removing the "ID" column
+colnames(energy) = c("ID", "year", "month", "state", "producer", "source", "generation")
+energy = energy %>% select(-`ID`)
+```
+
+```{r}
+energy$Date<-as.Date(with(energy,paste(year,month,Day = 1,sep="-")),"%Y-%m-%d")
+energy
+```
+
+##US total power generation per year
+```{r}
+energy %>% 
+  filter(producer == "Total Electric Power Industry", state == "US-TOTAL") %>% 
+  ggplot() + 
+  geom_point(aes(x = year, y = generation, color = source)) +
+  geom_smooth(aes(x = year, y = generation, color = source)) +
+  labs(title = "US total power generation per year")
+  
+```
+
+## Total power generation per state
+```{r}
+energy %>% 
+  filter(producer == "Total Electric Power Industry", state != "US-TOTAL") %>% 
+  ggplot() +
+  geom_point(aes(x = state, y = generation, color = source)) +
+  labs(title = "Total power generation per state")
+```
+
+## Total Power Generation Per Year
+```{r}
+energy %>% filter(producer == "Total Electric Power Industry", state != "US-TOTAL", source != "Total", year != 2022) %>% group_by(source, year) %>% 
+  summarize(total_generation = sum(generation)) %>% mutate(total_generation = total_generation / 1000000) %>% 
+  ggplot() +
+  geom_col(aes(x= year, y= total_generation)) +
+  geom_smooth(aes(x = year, y= total_generation)) +
+  facet_wrap(~source) +
+  labs(title = "Total Power Generation Per Year", x = "Year", y = "Power Generation(TWH)")
+```
+
+## Total Solar Power Generation Per Year
+
+```{r}
+energy %>% filter(producer == "Total Electric Power Industry", state != "US-TOTAL", source == "Solar Thermal and Photovoltaic", year != 2022) %>% group_by(year) %>% 
+  summarize(total_generation = sum(generation)) %>% mutate(total_generation = total_generation / 1000000) %>% 
+  ggplot() +
+  geom_col(aes(x= year, y= total_generation)) +
+  geom_smooth(aes(x = year, y= total_generation)) +
+  labs(title = "Total Solar Power Generation Per Year", x = "Year", y = "Power Generation(TWH)")
+```
+
+## Total Wind Power Generation Per Year
+
+```{r}
+energy %>% filter(producer == "Total Electric Power Industry", state != "US-TOTAL", source == "Wind", year != 2022) %>% group_by(year) %>% 
+  summarize(total_generation = sum(generation)) %>% mutate(total_generation = total_generation / 1000000) %>% 
+  ggplot() +
+  geom_col(aes(x= year, y= total_generation)) +
+  geom_smooth(aes(x = year, y= total_generation)) +
+  labs(title = "Total Wind Power Generation Per Year", x = "Year", y = "Power Generation(TWH)")
+```
+
+## Total Petroleum Power Generation Per Year
+
+```{r}
+energy %>% filter(producer == "Total Electric Power Industry", state != "US-TOTAL", source == "Petroleum", year != 2022) %>% group_by(year) %>% 
+  summarize(total_generation = sum(generation)) %>% mutate(total_generation = total_generation / 1000000) %>% 
+  ggplot() +
+  geom_col(aes(x= year, y= total_generation)) +
+  geom_smooth(aes(x = year, y= total_generation)) +
+  labs(title = "Total Petroleum Power Generation Per Year", x = "Year", y = "Power Generation(TWH)")
+```
+
+## Total Power Generation Over Time
+
+```{r}
+energy %>% filter(producer == "Total Electric Power Industry", state != "US-TOTAL", year != 2022, source == c("Solar Thermal and Photovoltaic", "Petroleum", "Wind")) %>% group_by(Date, source) %>% 
+  summarize(total_generation = sum(generation)) %>% mutate(total_generation = total_generation / 1000000) %>%
+  ggplot() +
+  geom_line(aes(x= Date, y= total_generation, color = source)) +
+  geom_smooth(aes(x = Date, y= total_generation, color = source)) +
+  labs(title = "Total Power Generation Over Time", x = "Date", y = "Power Generation(TWH)")
+```
+
+## Accumulative Power Generation Over Time (2001-2022)
+
+```{r}
+energy %>% filter(producer == "Total Electric Power Industry", state != "US-TOTAL", source == "Solar Thermal and Photovoltaic") %>%
+  ggplot() +
+  geom_col(aes(x= state, y= generation)) + labs(title = "Accumulative Power Generation Over Time (2001-2022)", x = "States", y = "Generation (MWH)") +
+  coord_flip() 
+```
+
+## U.S. Total Power Generated
+```{r}
+energy %>% 
+  ggplot() +
+  geom_col(aes(x = year, y = generation, fill = source)) +
+  facet_wrap(vars(source)) + labs(title= "U.S. Total Power Generated", x = "Year(2001-2022)", y= "Generation(MWH)")
+  
+```
+
+## States with negative power generation (<-5000)
+
+```{r}
+energy %>% 
+  filter(producer == "Total Electric Power Industry", state != "US-TOTAL", generation < -5000) %>% 
+  ggplot() +
+  geom_point(aes(x = state, y = generation, color = source)) +
+  labs(title = "States with negative power generation (<-5000)", x = "State", y= "Generation(MWH)")
+```
+
+
+US goal is to install an average of 30 GW of solar capacity per
+year between now and 2025 and 60 GW per year from 2025-2030.
+https://www.renewable-ei.org/pdfdownload/activities/01_Key_AlejandroMoreno.pdf
+
+
+```{r, include =FALSE}
+total_energy = energy %>% filter(producer == "Total Electric Power Industry", state != "US-TOTAL") 
+fig = energy %>% 
+  filter(producer == "Total Electric Power Industry", state != "US-TOTAL") %>% 
+  group_by(year, month, state) %>% 
+  summarize(total = sum(generation)/2) %>% 
+  right_join(total_energy) %>%
+  filter(source != "Total") %>% 
+  ggplot() +
+  geom_col(aes(x = state, y = generation, fill = source))
+
+ggplotly(fig, tooltip = "y")
+```
+
+
+## Texas total power generation per year
+```{r}
+energy %>% 
+  filter(producer == "Total Electric Power Industry", state == "TX") %>% 
+  ggplot() + 
+  geom_point(aes(x = year, y = generation, color = source)) +
+  geom_smooth(aes(x = year, y = generation, color = source)) +
+  labs(title = "Texas total power generation per year", x = "Year(2001-2022)", y= "Generation(MWH)")
+```
+
+
+## Texas total power generation per month
+```{r}
+energy %>% 
+  filter(producer == "Total Electric Power Industry", state == "TX") %>% 
+  ggplot() + 
+  geom_point(aes(x = month, y = generation, color = source)) +
+  geom_smooth(aes(x = month, y = generation, color = source)) +
+  labs(title = "Texas total power generation per month", x = "Month", y= "Generation(MWH)")
+```
+
+
+## Texas Total Wind Power Generation Per Year
+```{r}
+energy %>% filter(producer == "Total Electric Power Industry", state == "TX", source == "Wind", year != 2022) %>% group_by(year) %>% 
+  summarize(total_generation = sum(generation)) %>% mutate(total_generation = total_generation / 1000000) %>% 
+  ggplot() +
+  geom_col(aes(x= year, y= total_generation)) +
+  geom_smooth(aes(x = year, y= total_generation)) +
+  labs(title = "Texas Total Wind Power Generation Per Year", x = "Year", y = "Power Generation(TWH)")
+```
+
+
+## Texas Total Petroleum Generation Per Year
+```{r}
+energy %>% filter(producer == "Total Electric Power Industry", state == "TX", source == "Petroleum", year != 2022) %>% group_by(year) %>% 
+  summarize(total_generation = sum(generation)) %>% mutate(total_generation = total_generation / 1000000) %>% 
+  ggplot() +
+  geom_col(aes(x= year, y= total_generation)) +
+  geom_smooth(aes(x = year, y= total_generation)) +
+  labs(title = "Texas Total Petroleum Generation Per Year", x = "Year", y = "Power Generation(TWH)")
+```
+
+
+## Texas Total Solar Power Generation Per Year
+```{r}
+energy %>% filter(producer == "Total Electric Power Industry", state == "TX", source == "Solar Thermal and Photovoltaic", year != 2022) %>% group_by(year) %>% 
+  summarize(total_generation = sum(generation)) %>% mutate(total_generation = total_generation / 1000000) %>% 
+  ggplot() +
+  geom_col(aes(x= year, y= total_generation)) +
+  geom_smooth(aes(x = year, y= total_generation)) +
+  labs(title = "Texas Total Solar Power Generation Per Year", x = "Year", y = "Power Generation(TWH)")
+```
+
+
+## Total Power Generation Over Time
+```{r}
+energy %>% filter(producer == "Total Electric Power Industry", state == "TX", year != 2022, source == c("Solar Thermal and Photovoltaic", "Petroleum", "Wind")) %>% group_by(Date, source) %>% 
+  summarize(total_generation = sum(generation)) %>% mutate(total_generation = total_generation / 1000000) %>%
+  ggplot() +
+  geom_line(aes(x= Date, y= total_generation, color = source)) +
+  geom_smooth(aes(x = Date, y= total_generation, color = source)) +
+  labs(title = "Total Power Generation Over Time", x = "Date", y = "Power Generation(TWH)")
+```
