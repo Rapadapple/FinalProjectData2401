@@ -7,23 +7,17 @@ runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = F)
 ```
 
 
 ```{r}
-<<<<<<< HEAD
 # Load tidyverse for manipulating data
 #Load ggplot2, and plotly for graphing data
 library(tidyverse, warn.conflicts = F)
 library(ggplot2, warn.conflicts = F)
 library(plotly, warn.conflicts = F)
-=======
-library(tidyverse)
-library(ggplot2)
-library(plotly)
-library(shiny)
->>>>>>> fd374ce8d87b7809e9f5e3172dc2c8bf31b3ff62
+library(shiny, warn.conflicts = F)
 ```
 
 ```{r}
@@ -143,7 +137,7 @@ year between now and 2025 and 60 GW per year from 2025-2030.
 https://www.renewable-ei.org/pdfdownload/activities/01_Key_AlejandroMoreno.pdf
 
 
-```{r, include =FALSE}
+```{r fig.height=8, fig.width=5}
 total_energy = energy %>% filter(producer == "Total Electric Power Industry", state != "US-TOTAL") 
 fig = energy %>% 
   filter(producer == "Total Electric Power Industry", state != "US-TOTAL") %>% 
@@ -152,9 +146,12 @@ fig = energy %>%
   right_join(total_energy) %>%
   filter(source != "Total") %>% 
   ggplot() +
-  geom_col(aes(x = state, y = generation, fill = source))
+  geom_col(aes(x = state, y = generation, fill = source)) +
+  coord_flip()
 
-ggplotly(fig, tooltip = "y")
+fig
+
+#ggplotly(fig, tooltip = "y")
 ```
 
 
@@ -170,7 +167,7 @@ ggplotly(fig, tooltip = "y")
 
 
 
-```{r}
+```{r, echo = F}
 energy %>% 
   filter(producer == "Total Electric Power Industry", state == "TX") %>% 
   ggplot() + 
@@ -216,9 +213,6 @@ energy %>% filter(producer == "Total Electric Power Industry", state == "TX", so
 ```
 
 ```{r}
-<<<<<<< HEAD
-energy %>% filter(producer == "Total Electric Power Industry", state == "TX", year != 2022, source == c("Solar Thermal and Photovoltaic", "Petroleum", "Wind")) %>% group_by(Date, source) %>% 
-=======
 energy %>% filter(producer == "Total Electric Power Industry", state != "US-TOTAL", source == "Wind", year != 2022) %>% group_by(year) %>% 
   summarize(total_generation = sum(generation)) %>% mutate(total_generation = total_generation / 1000000) %>% 
   ggplot() +
@@ -229,18 +223,15 @@ energy %>% filter(producer == "Total Electric Power Industry", state != "US-TOTA
 
 ```{r}
 fig3 = energy %>% filter(producer == "Total Electric Power Industry", state != "US-TOTAL", year != 2022, source == c("Solar Thermal and Photovoltaic", "Petroleum", "Wind")) %>% group_by(Date, source) %>% 
->>>>>>> fd374ce8d87b7809e9f5e3172dc2c8bf31b3ff62
+#>>>>>>> fd374ce8d87b7809e9f5e3172dc2c8bf31b3ff62
   summarize(total_generation = sum(generation)) %>% mutate(total_generation = total_generation / 1000000) %>%
   ggplot() +
   geom_line(aes(x= Date, y= total_generation, color = source)) +
   geom_smooth(aes(x = Date, y= total_generation, color = source)) +
   labs(title = "Total Power Generation Over Time", x = "Date", y = "Power Generation(TWH)")
-<<<<<<< HEAD
+#<<<<<<< HEAD
 ```
 =======
-
-ggplotly(fig3, tooltip = c("x", "y", "source"))
-```
 
 ```{r}
 
@@ -291,6 +282,7 @@ shinyApp(ui = ui, server = server)
 ```
 
 ```{r}
+
 ui <- fluidPage(
   # App title ----
   titlePanel("Total Power Generation Over Time"),
@@ -338,4 +330,3 @@ shinyApp(ui = ui, server = server)
 ```
 
 
->>>>>>> fd374ce8d87b7809e9f5e3172dc2c8bf31b3ff62
