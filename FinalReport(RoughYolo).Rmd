@@ -37,7 +37,7 @@ energy %>% count(producer)
 
 energy %>% count(source)
 
-
+#Texas Power Dist
 energy %>% 
   filter(producer != "Total Electric Power Industry", state == 'TX', source != 'Total') %>%
   ggplot() + 
@@ -45,21 +45,35 @@ energy %>%
   labs(title = "TX Power Distribution") +
   theme(axis.text.x = element_text(angle = -25, vjust = .5, hjust = .1))
 
+#US Power Generation Per Year
 energy %>% 
-  filter(producer != "Total Electric Power Industry", state == "TX", source != 'Total') %>% 
+  filter(producer != "Total Electric Power Industry", state == "US-TOTAL", source != 'Total', year <= 2021) %>% 
   ggplot() + 
-  geom_col(aes(x = month, y = generation, fill = source)) +
-  labs(title = "US total power generation per year")
+  geom_col(aes(x = year, y = generation, fill = source)) +
+  labs(title = "US Ppower Generation Per Year")
 
+#Total US power distribution over months
 energy %>% 
   filter(producer == "Total Electric Power Industry", state == 'US-TOTAL', source == 'Total') %>% 
   ggplot(aes(group = month, x = month, y = generation, fill = month))+
-  geom_boxplot() 
+  geom_boxplot() +
+  scale_x_continuous(breaks = c(1:12))
+
+
+#TX power distribution over months
+energy %>% 
+  filter(producer == "Total Electric Power Industry", state == 'TX', source == 'Total') %>% 
+  ggplot(aes(group = month, x = month, y = generation, fill = month))+
+  geom_boxplot() +
+  scale_x_continuous(breaks = c(1:12))+
+  labs(title = 'TX Power Distribution Over Months')+
 
 energy %>% 
   filter(producer != "Total Electric Power Industry", state == 'TX', source != 'Total') %>% 
   ggplot()+
-  geom_col(aes(x = month, y = generation, fill = month))
+  geom_col(aes(x = month, y = generation, fill = source)) +
+  labs(title = 'Texas Monthly Power Distribution Per Month')+
+  scale_x_continuous(breaks = c(1:12))
 ```
 #What we can derive from this graph is )___ observations: 1) our total energy 
 ```{r}
@@ -70,7 +84,7 @@ energy %>%
   labs(title = "US total power generation per year")
 
 energy %>% 
-  filter(producer == "Electric Generators, Electric Utilities", state == "US-TOTAL") %>% 
+  filter(producer == "Electric Generators, Electric Utilities", state == "US-TOTAL", year <=2021) %>% 
   ggplot() + 
   geom_col(aes(x = year, y = generation, fill = source)) +
   labs(title = "US Electric Generators, Electric Utilities Generation Per Year")
