@@ -222,14 +222,16 @@ energy %>% filter(producer == "Total Electric Power Industry", state != "US-TOTA
 ```
 
 ```{r}
-fig3 = energy %>% filter(producer == "Total Electric Power Industry", state != "US-TOTAL", year != 2022, source == c("Solar Thermal and Photovoltaic", "Petroleum", "Wind")) %>% group_by(Date, source) %>% 
-#>>>>>>> fd374ce8d87b7809e9f5e3172dc2c8bf31b3ff62
+fig3 = energy %>% filter(producer == "Total Electric Power Industry", state != "US-TOTAL", year != 2022, source == c("Solar Thermal and Photovoltaic", "Petroleum", "Wind")) %>% 
+  group_by(Date, source) %>% 
   summarize(total_generation = sum(generation)) %>% mutate(total_generation = total_generation / 1000000) %>%
   ggplot() +
   geom_line(aes(x= Date, y= total_generation, color = source)) +
   geom_smooth(aes(x = Date, y= total_generation, color = source)) +
   labs(title = "Total Power Generation Over Time", x = "Date", y = "Power Generation(TWH)")
-#<<<<<<< HEAD
+
+fig3
+
 ```
 
 
