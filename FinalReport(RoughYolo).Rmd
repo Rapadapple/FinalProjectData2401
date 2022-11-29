@@ -17,109 +17,70 @@ library(ggplot2)
 
 ```{r}
 energy = read_csv("archive/organised_Gen.csv")
-
 ```
 
 
 ```{r}
 colnames(energy) = c("ID", "year", "month", "state", "producer", "source", "generation")
 energy = energy %>% select(-`ID`)
+
+energy
 ```
 
+#
+What is a producer? Type of producers are Companys and utilities that generate energy from Total final energy consumption (TFEC). Total final energy consumption (TFEC) is found by multiplying the power use (in kilowatts, kW) by the number of hours during which the power is consumed. Multiply that value by the cost per kWh, and you have the total energy cost. Final or available energy is the energy delivered to consumers for end consumption (petrol at the pump, electricity in the household, etc.).
 
-For John
+The Type of producer category has 6 categories that classify the energy generation and that are going to be used to analyze the effect and importance of each one.  
+
 ```{r}
 energy %>% count(producer)
 
+energy %>% count(source)
 
-energy
-energy %>% 
-  filter(producer == 'Electric Generators, Electric Utilities', state == 'TX') %>% 
-  count(source) %>% 
-  ggplot() +
-  geom_col(aes(x = source, y = n, color = source)) +
-  coord_flip()
-```
 
-```{r}
 energy %>% 
-  filter(producer == "Total Electric Power Industry", state == "US-TOTAL") %>% 
+  filter(producer != "Total Electric Power Industry", state == 'TX', source != 'Total') %>%
   ggplot() + 
-  geom_point(aes(x = year, y = generation, color = source)) +
-  geom_smooth(aes(x = year, y = generation, color = source)) +
+  geom_col(aes(x = producer, y = generation, fill = source)) +
+  labs(title = "TX Power Distribution") +
+  theme(axis.text.x = element_text(angle = -25, vjust = .5, hjust = .1))
+
+energy %>% 
+  filter(producer != "Total Electric Power Industry", state == "TX", source != 'Total') %>% 
+  ggplot() + 
+  geom_col(aes(x = month, y = generation, fill = source)) +
   labs(title = "US total power generation per year")
-  
+
+energy %>% 
+  filter(producer == "Total Electric Power Industry", state == 'US-TOTAL', source == 'Total') %>% 
+  ggplot(aes(group = month, x = month, y = generation, fill = month))+
+  geom_boxplot() 
+
+energy %>% 
+  filter(producer != "Total Electric Power Industry", state == 'TX', source != 'Total') %>% 
+  ggplot()+
+  geom_col(aes(x = month, y = generation, fill = month))
 ```
+#What we can derive from this graph is )___ observations: 1) our total energy 
 ```{r}
 energy %>% 
   filter(producer == "Total Electric Power Industry", state == "US-TOTAL") %>% 
   ggplot() + 
-  geom_col(aes(x = year, y = generation, color = source)) +
+  geom_col(aes(x = year, y = generation, fill = source)) +
   labs(title = "US total power generation per year")
-```
-
-```{r}
-energy %>% 
-  filter(producer == "Total Electric Power Industry", state == "TX") %>% 
-  ggplot() + 
-  geom_point(aes(x = year, y = generation, color = source)) +
-  geom_smooth(aes(x = year, y = generation, color = source)) +
-  labs(title = "Texas total power generation per year")
-```
-
-
-
-```{r}
-energy %>% 
-  filter(producer == "Total Electric Power Industry", state != "US-TOTAL") %>% 
-  ggplot() +
-  geom_point(aes(x = state, y = generation, color = source)) +
-  coord_flip()
-```
-```{r}
-energy %>% 
-  filter(producer == "Total Electric Power Industry", state != "US-TOTAL", generation < -5000) %>% 
-  ggplot() +
-  geom_point(aes(x = state, y = generation, color = source)) +
-  coord_flip()
-```
-
-
-
-```{r}
-energy %>% 
-  filter(producer == "Total Electric Power Industry", state == "TX") %>% 
-  ggplot() + 
-  geom_point(aes(x = month, y = generation, color = source)) +
-  geom_smooth(aes(x = month, y = generation, color = source)) +
-  labs(title = "Texas total power generation per month")
-```
-Largest energy producers by state.
-```{r}
-energy %>% 
-  filter(producer == "Total Electric Power Industry", state == "US-TOTAL") %>% 
-  ggplot() + 
-  geom_point(aes(x = month, y = generation, color = source)) +
-  geom_smooth(aes(x = month, y = generation, color = source)) +
-  labs(title = "US total power generation per year") +
-  scale_x_continuous(breaks=seq(1,12,by=1))
-
-```
-```{r}
 
 energy %>% 
   filter(producer == "Electric Generators, Electric Utilities", state == "US-TOTAL") %>% 
   ggplot() + 
-  geom_point(aes(x = year, y = generation, color = source)) +
-  geom_smooth(aes(x = year, y = generation, color = source)) +
-  labs(title = "US total power generation per year")
+  geom_col(aes(x = year, y = generation, fill = source)) +
+  labs(title = "US Electric Generators, Electric Utilities Generation Per Year")
 ```
+
 ```{r}
 energy %>% 
   filter(producer == "Electric Generators, Electric Utilities", state == "US-TOTAL") %>% 
   ggplot() + 
-  geom_col(aes(x = year, y = generation, color = source)) +
-  geom_smooth(aes(x = year, y = generation, color = source)) +
+  geom_col(aes(x = year, y = generation, fill = source)) +
   labs(title = "US total power generation per year")
 ```
 
