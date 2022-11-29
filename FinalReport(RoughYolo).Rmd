@@ -134,7 +134,15 @@ energy %>%
   filter(source != 'Total', year == 2020) %>% 
   ggplot() + 
   geom_col(aes(x = producer, y = generation, fill = source)) +
-  labs(title = "bfdsa")+
+  labs(title = "US Energy Sources Among Producer Types in 2020")+
+  theme(axis.text.x = element_text(angle = -15, vjust = 1, hjust = .1))
+
+energy %>% 
+  group_by(source, producer, state) %>% 
+  filter(source != 'Total', year == 2020, state == "TX") %>% 
+  ggplot() + 
+  geom_col(aes(x = producer, y = generation, fill = source)) +
+  labs(title = "TX Energy Sources Among Producer Types in 2020")+
   theme(axis.text.x = element_text(angle = -15, vjust = 1, hjust = .1))
 
 energy %>% 
