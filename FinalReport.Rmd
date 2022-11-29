@@ -347,5 +347,23 @@ energy %>%
   geom_col(aes(x = month, y = generation, fill = source)) +
   labs(title = 'Texas Monthly Power Distribution Per Month')+
   scale_x_continuous(breaks = c(1:12))
+
+#US Energy Sources Among Producer Types in 2020
+energy %>% 
+  group_by(source, producer) %>% 
+  filter(source != 'Total', year == 2020) %>% 
+  ggplot() + 
+  geom_col(aes(x = producer, y = generation, fill = source)) +
+  labs(title = "US Energy Sources Among Producer Types in 2020")+
+  theme(axis.text.x = element_text(angle = -15, vjust = 1, hjust = .1))
+
+#TX Energy Sources Among Producer Types in 2020
+energy %>% 
+  group_by(source, producer, state) %>% 
+  filter(source != 'Total', year == 2020, state == "TX") %>% 
+  ggplot() + 
+  geom_col(aes(x = producer, y = generation, fill = source)) +
+  labs(title = "TX Energy Sources Among Producer Types in 2020")+
+  theme(axis.text.x = element_text(angle = -15, vjust = 1, hjust = .1))
 ```
  
