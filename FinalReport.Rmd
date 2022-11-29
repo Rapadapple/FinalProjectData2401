@@ -231,7 +231,8 @@ fig3 = energy %>% filter(producer == "Total Electric Power Industry", state != "
   labs(title = "Total Power Generation Over Time", x = "Date", y = "Power Generation(TWH)")
 #<<<<<<< HEAD
 ```
-=======
+
+
 
 ```{r}
 
@@ -243,10 +244,15 @@ ui <- fluidPage(
     # Sidebar panel for inputs ----
     sidebarPanel(
       position = "right",
-      checkboxGroupInput("sources", label = h3("Source:"), 
-      choices = unique(energy$source),
-      selected = "Total"),
-  
+      
+      checkboxGroupInput("sources", 
+        label = h3("Source:"), 
+        choices = unique(energy$source),
+        selected = "Total"),
+      
+      checkboxInput("facetStatus",
+                    "Facet",
+                    value = TRUE),
   
       hr(),
       fluidRow(column(3, verbatimTextOutput("value")))
@@ -264,9 +270,11 @@ ui <- fluidPage(
 
 server = function(input, output){
   shinyEnergy = reactive({
-    energy %>% filter(producer == "Total Electric Power Industry", state != "US-TOTAL", year != 2022, source == input$sources) %>% group_by(Date, source)   %>% 
+    energy %>% filter(producer == "Total Electric Power Industry", state != "US-TOTAL", year != 2022, source == input$sources) %>% group_by(Date, source) %>% 
     summarize(total_generation = sum(generation)) %>% mutate(total_generation = total_generation / 1000000)
   })
+  
+  
   
   output$totalGenPlot = renderPlotly({
     fig2 = shinyEnergy() %>% 
@@ -274,54 +282,17 @@ server = function(input, output){
     geom_line(aes(x= Date, y= total_generation, color = source)) +
     geom_smooth(aes(x = Date, y= total_generation, color = source)) +
     labs(title = "Total Power Generation Over Time", x = "Date", y = "Power Generation(TWH)")
-    ggplotly(fig2, tooltip = c("x", "y", "source", "fit"))
-  })
-}
-
-shinyApp(ui = ui, server = server)
-```
-
-```{r}
-
-ui <- fluidPage(
-  # App title ----
-  titlePanel("Total Power Generation Over Time"),
-  # Sidebar layout with a input and output definitions ----
-  sidebarLayout(
-    # Sidebar panel for inputs ----
-    sidebarPanel(
-      position = "right",
-      checkboxGroupInput("sources", label = h3("Source:"), 
-      choices = unique(energy$source),
-      selected = "Total"),
-  
-  
-      hr(),
-      fluidRow(column(3, verbatimTextOutput("value")))
-    ),
-
-    # Main panel for displaying outputs ----
-    mainPanel(
-      # Output: Verbatim text for data summary ----
-      verbatimTextOutput("summary"),
-      # Output: HTML table with requested number of observations ----
-      plotlyOutput("totalGenPlot")
-    )
-  )
-)
-
-server = function(input, output){
-  shinyEnergy = reactive({
-    energy %>% filter(producer == "Total Electric Power Industry", state != "US-TOTAL", year != 2022, source == input$sources) %>% group_by(Date, source)   %>% 
-    summarize(total_generation = sum(generation)) %>% mutate(total_generation = total_generation / 1000000)
-  })
-  
-  output$totalGenPlot = renderPlotly({
-    fig2 = shinyEnergy() %>% 
-    ggplot() +
-    geom_line(aes(x= Date, y= total_generation, color = source)) +
-    geom_smooth(aes(x = Date, y= total_generation, color = source)) +
-    labs(title = "Total Power Generation Over Time", x = "Date", y = "Power Generation(TWH)")
+    
+    facetEnergy = reactive({
+      if(input$facetStatus == T){
+        fig2 + facet_wrap(~source)
+      }
+      else{
+        fig2
+      }
+    })
+    
+    fig2 = facetEnergy()
     ggplotly(fig2, tooltip = c("x", "y", "source"))
   })
 }
