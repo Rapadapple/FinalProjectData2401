@@ -105,29 +105,26 @@ energy %>%
   filter(source == 'Coal', producer != "Total Electric Power Industry") %>% 
   ggplot() + 
   geom_col(aes(x = producer, y = generation, fill = producer)) +
-  labs(title = "bfdsa")+
+  labs(title = "Coal")+
   theme(axis.text.x = element_text(angle = -25, vjust = 1, hjust = .1))
 
 energy %>% 
   filter(source == 'Nuclear', producer != "Total Electric Power Industry") %>% 
   ggplot() + 
   geom_col(aes(x = producer, y = generation, fill = producer)) +
-  labs(title = "bfdsa")+
+  labs(title = "Nuclear")+
   theme(axis.text.x = element_text(angle = -25, vjust = 1, hjust = .1))
 
 energy %>% 
   filter(source == 'Petroleum', producer != "Total Electric Power Industry") %>% 
   ggplot() + 
   geom_col(aes(x = producer, y = generation, fill = producer)) +
-  labs(title = "bfdsa")+
+  labs(title = 'Petroleum')+
   theme(axis.text.x = element_text(angle = -25, vjust = 1, hjust = .1))
 
-energy %>% 
-  filter(source == 'Coal', producer != "Total Electric Power Industry") %>% 
-  ggplot() + 
-  geom_col(aes(x = producer, y = generation, fill = producer)) +
-  labs(title = "bfdsa")+
-  theme(axis.text.x = element_text(angle = -25, vjust = 1, hjust = .1))
+
+
+######################################################
 
 energy %>% 
   group_by(source, producer) %>% 
