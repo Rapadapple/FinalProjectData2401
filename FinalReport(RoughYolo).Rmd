@@ -66,7 +66,7 @@ energy %>%
   ggplot(aes(group = month, x = month, y = generation, fill = month))+
   geom_boxplot() +
   scale_x_continuous(breaks = c(1:12))+
-  labs(title = 'TX Power Distribution Over Months')+
+  labs(title = 'TX Power Distribution Over Months')
 
 energy %>% 
   filter(producer != "Total Electric Power Industry", state == 'TX', source != 'Total') %>% 
