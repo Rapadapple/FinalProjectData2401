@@ -7,11 +7,11 @@ runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = F, warn.conflicts = F)
 ```
 
 
-```{r}
+```{r, echo = F}
 # Load tidyverse for manipulating data
 #Load ggplot2, and plotly for graphing data
 library(tidyverse, warn.conflicts = F)
@@ -20,7 +20,7 @@ library(plotly, warn.conflicts = F)
 library(shiny, warn.conflicts = F)
 ```
 
-```{r}
+```{r, echo = F}
 #Read in the energy data
 energy = read_csv("archive/organised_Gen.csv")
 glimpse(energy)
@@ -28,18 +28,18 @@ glimpse(energy)
 ```
 
 
-```{r}
+```{r, echo = F}
 #renaming the columns and removing the "ID" column
 colnames(energy) = c("ID", "year", "month", "state", "producer", "source", "generation")
 energy = energy %>% select(-`ID`)
 ```
 
-```{r}
+```{r, echo = F}
 energy$Date<-as.Date(with(energy,paste(year,month,Day = 1,sep="-")),"%Y-%m-%d")
 energy
 ```
 
-##US total power generation per year
+## US total power generation per year
 ```{r}
 energy %>% 
   filter(producer == "Total Electric Power Industry", state == "US-TOTAL") %>% 
