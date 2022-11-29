@@ -50,7 +50,7 @@ energy %>%
   filter(producer != "Total Electric Power Industry", state == "US-TOTAL", source != 'Total', year <= 2021) %>% 
   ggplot() + 
   geom_col(aes(x = year, y = generation, fill = source)) +
-  labs(title = "US Ppower Generation Per Year")
+  labs(title = "US Power Generation Per Year")
 
 #Total US power distribution over months
 energy %>% 
@@ -78,10 +78,11 @@ energy %>%
 #What we can derive from this graph is )___ observations: 1) our total energy 
 ```{r}
 energy %>% 
-  filter(producer == "Total Electric Power Industry", state == "US-TOTAL") %>% 
+  filter(producer != "Total Electric Power Industry", state == "US-TOTAL", source != 'Total', year <= 2021) %>% 
   ggplot() + 
   geom_col(aes(x = year, y = generation, fill = source)) +
-  labs(title = "US total power generation per year")
+  labs(title = "US Power Generation Per Year")
+
 
 energy %>% 
   filter(producer == "Electric Generators, Electric Utilities", state == "US-TOTAL", year <=2021) %>% 
@@ -98,8 +99,50 @@ energy %>%
   labs(title = "US total power generation per year")
 ```
 
-Coal Percentage
+Source Percentage Per Producer Type
 ```{r}
+energy %>% 
+  filter(source == 'Coal', producer != "Total Electric Power Industry") %>% 
+  ggplot() + 
+  geom_col(aes(x = producer, y = generation, fill = producer)) +
+  labs(title = "bfdsa")+
+  theme(axis.text.x = element_text(angle = -25, vjust = 1, hjust = .1))
 
+energy %>% 
+  filter(source == 'Nuclear', producer != "Total Electric Power Industry") %>% 
+  ggplot() + 
+  geom_col(aes(x = producer, y = generation, fill = producer)) +
+  labs(title = "bfdsa")+
+  theme(axis.text.x = element_text(angle = -25, vjust = 1, hjust = .1))
+
+energy %>% 
+  filter(source == 'Petroleum', producer != "Total Electric Power Industry") %>% 
+  ggplot() + 
+  geom_col(aes(x = producer, y = generation, fill = producer)) +
+  labs(title = "bfdsa")+
+  theme(axis.text.x = element_text(angle = -25, vjust = 1, hjust = .1))
+
+energy %>% 
+  filter(source == 'Coal', producer != "Total Electric Power Industry") %>% 
+  ggplot() + 
+  geom_col(aes(x = producer, y = generation, fill = producer)) +
+  labs(title = "bfdsa")+
+  theme(axis.text.x = element_text(angle = -25, vjust = 1, hjust = .1))
+
+energy %>% 
+  group_by(source, producer) %>% 
+  filter(source != 'Total', year == 2020) %>% 
+  ggplot() + 
+  geom_col(aes(x = producer, y = generation, fill = source)) +
+  labs(title = "bfdsa")+
+  theme(axis.text.x = element_text(angle = -15, vjust = 1, hjust = .1))
+
+energy %>% 
+  group_by(source, producer) %>% 
+  filter(source != 'Total', year == 2001) %>% 
+  ggplot() + 
+  geom_col(aes(x = producer, y = generation, fill = source)) +
+  labs(title = "bfdsa")+
+  theme(axis.text.x = element_text(angle = -15, vjust = 1, hjust = .1))
 ```
 
