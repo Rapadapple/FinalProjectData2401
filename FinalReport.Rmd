@@ -59,14 +59,8 @@ energy %>%
   geom_smooth(aes(x = year, y = generation/1000000, color = source)) +
   labs(title = "US average power generation per year", y = "Generation(TWH)", x = "Year") + theme_clean()
   
-
-energy %>% 
-  filter(producer == "Total Electric Power Industry", state == 'US-TOTAL', source == 'Total') %>% 
-  ggplot(aes(group = month, x = month, y = generation/1000000, fill = month))+
-  geom_boxplot() +
-  scale_x_continuous(breaks = c(1:12)) +
-  labs(title = "US average power generation per year", y = "Generation(TWH)", x = "Year") + theme_clean()
 ```
+
 
 ## US Power Generation
 
@@ -108,7 +102,7 @@ energy %>%
 
 ## Texas Power Generation
 
-```{r}
+```{r fig.height=20}
 
 ui <- fluidPage(
   # App title ----
@@ -150,7 +144,7 @@ server = function(input, output){
     ggplot() +
     geom_line(aes(x= Date, y= total_generation, color = source)) +
     geom_smooth(aes(x = Date, y= total_generation, color = source)) +
-    labs(title = "Texas Total Power Generation Over Time", x = "Date", y = "Power Generation(TWH)") + theme_clean()
+    labs(title = "Texas Total Power Generation Over Time", x = "Date", y = "Power Generation(TWH)") 
     
     facetEnergy = reactive({
       if(input$facetStatus == T){
@@ -228,7 +222,7 @@ server = function(input, output){
     ggplot() +
     geom_line(aes(x= Date, y= total_generation, color = source)) +
     geom_smooth(aes(x = Date, y= total_generation, color = source)) +
-    labs(title = "Total Power Generation Over Time", x = "Date", y = "Power Generation(TWH)") + theme_clean()
+    labs(title = "Total Power Generation Over Time", x = "Date", y = "Power Generation(TWH)") 
     
     facetEnergy = reactive({
       if(input$facetStatus == T){
