@@ -61,7 +61,6 @@ energy %>%
   
 ```
 
-
 ## US Power Generation
 
 ```{r fig.height=8, fig.width=5}
@@ -89,7 +88,7 @@ energy %>%
   ggplot() + 
   geom_point(aes(x = year, y = generation/1000000, color = source)) +
   geom_smooth(aes(x = year, y = generation/1000000, color = source)) +
-  labs(title = "Texas monthly average power generation per year", x = "Year", y = "Power Generation(TWH)") + theme_clean()
+  labs(title = "Texas average power generation per year", x = "Year", y = "Power Generation(TWH)") + theme_clean()
 
 
 energy %>% 
@@ -97,7 +96,7 @@ energy %>%
   ggplot() + 
   geom_point(aes(x = month, y = generation/1000000, color = source)) +
   geom_smooth(aes(x = month, y = generation/1000000, color = source)) +
-  labs(title = "Texas total power generation per month", x = "Month", y = "Power Generation(TWH)") + theme_clean()
+  labs(title = "Texas average power generation per month", x = "Month", y = "Power Generation(TWH)") + theme_clean()
 ```
 
 ## Texas Power Generation
