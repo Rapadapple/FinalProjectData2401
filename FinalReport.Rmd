@@ -14,7 +14,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-
 ```{r}
 # Load tidyverse for manipulating data
 #Load ggplot2, and plotly for graphing data
@@ -30,7 +29,6 @@ library(ggthemes, warn.conflicts = F)
 energy = read_csv("archive/organised_Gen.csv")
 
 ```
-
 
 ```{r}
 #renaming the columns and removing the "ID" column
@@ -82,7 +80,6 @@ fig = energy %>%
 fig
 ```
 
-
 ## Texas Power Generation
 
 ```{r}
@@ -104,7 +101,7 @@ energy %>%
 
 ## Texas Power Generation
 
-```{r}
+```{r fig.height=10, fig.width=6}
 
 ui <- fluidPage(
   # App title ----
@@ -122,10 +119,7 @@ ui <- fluidPage(
       
       checkboxInput("facetStatus",
                     "Facet",
-                    value = TRUE),
-  
-      hr(),
-      fluidRow(column(3, verbatimTextOutput("value")))
+                    value = TRUE)
     ),
 
     # Main panel for displaying outputs ----
@@ -180,9 +174,7 @@ energy %>%
   labs(title = "States with negative power generation (<-5000)")
 ```
 
-
 ## US Power Generation
-
 
 ```{r}
 
@@ -253,6 +245,7 @@ shinyApp(ui = ui, server = server)
 ## Andrew
 
 Contributions below will include: Texas Power Dist, US Power Generation Per Year, Total US power distribution over months, TX power distribution over months
+
 ```{r}
 energy %>% count(producer)
 
@@ -297,7 +290,6 @@ energy %>%
   scale_x_continuous(breaks = c(1:12))
 ```
 
-
 ## Energy Sources amoung producer types
 
 ```{r}
@@ -319,6 +311,3 @@ energy %>%
   labs(title = "TX Energy Sources Among Producer Types in 2020")+
   theme(axis.text.x = element_text(angle = -15, vjust = 1, hjust = .1))
 ```
-
-
- 
