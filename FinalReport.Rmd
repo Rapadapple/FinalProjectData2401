@@ -101,7 +101,7 @@ energy %>%
 
 ## Texas Power Generation
 
-```{r fig.height=10, fig.width=6}
+```{r fig.height=20}
 
 ui <- fluidPage(
   # App title ----
@@ -124,10 +124,10 @@ ui <- fluidPage(
 
     # Main panel for displaying outputs ----
     mainPanel(
-      # Output: Verbatim text for data summary ----
-      verbatimTextOutput("summary"),
       # Output: HTML table with requested number of observations ----
-      plotlyOutput("totalGenPlot")
+      plotlyOutput("totalGenPlot",
+                   width = "100%",
+                   height = "100%")
     )
   )
 )
@@ -137,9 +137,7 @@ server = function(input, output){
     energy %>% filter(producer == "Total Electric Power Industry", state == "TX", year != 2022, source == input$sources) %>% group_by(Date, source) %>% 
     summarize(total_generation = sum(generation)) %>% mutate(total_generation = total_generation / 1000000)
   })
-  
-  
-  
+
   output$totalGenPlot = renderPlotly({
     fig2 = shinyEnergy() %>% 
     ggplot() +
