@@ -1,5 +1,5 @@
 ---
-title: "Data2401Final"
+title: "United States Energy Generation 2001-2022"
 author: "Kevin Sheard, John Beall, Andrew Vo"
 date: "`r Sys.Date()`"
 output: slidy_presentation
@@ -42,10 +42,11 @@ energy = energy %>% select(-`ID`)
 energy$Date<-as.Date(with(energy,paste(year,month,Day = 1,sep="-")),"%Y-%m-%d")
 glimpse(energy)
 ```
-- library(tidyverse)
-- library(ggplot2)
-- library(plotly)
-- library(shiny)
+- library(tidyverse) Why else? Makes things tidy
+- library(ggplot2) Because graphs
+- library(plotly) Because graphs with shiny
+- library(shiny) Whats better than data? Interactive data!
+- library(ggthemes) Gotta be fancy
 
 
 ## US Power Generation
@@ -107,7 +108,7 @@ energy %>%
 
 ## Texas Power Generation
 
-```{r fig.height=20}
+```{r}
 
 ui <- fluidPage(
   # App title ----
@@ -261,7 +262,7 @@ energy %>%
   ggplot() + 
   geom_col(aes(x = producer, y = generation/1000000, fill = source)) +
   labs(title = "Texas Power Distribution", x= "Producer", y= "Power Generation(TWH)") +
-  theme(axis.text.x = element_text(angle = -25, vjust = .5, hjust = .1)) + theme_clean()
+  theme(axis.text.x = element_text(angle = -25, vjust = .5, hjust = .1)) 
 
 #US Power Generation Per Year
 energy %>% 
@@ -307,7 +308,7 @@ energy %>%
   ggplot() + 
   geom_col(aes(x = producer, y = generation/1000000, fill = source)) +
   labs(title = "US Energy Sources Among Producer Types in 2020", x= "Producer", y="Power Generation(TWH)")+
-  theme(axis.text.x = element_text(angle = -15, vjust = 1, hjust = .1)) + theme_clean()
+  theme(axis.text.x = element_text(angle = -15, vjust = 1, hjust = .1)) 
 
 #TX Energy Sources Among Producer Types in 2020
 energy %>% 
@@ -316,5 +317,5 @@ energy %>%
   ggplot() + 
   geom_col(aes(x = producer, y = generation/1000000, fill = source)) +
   labs(title = "TX Energy Sources Among Producer Types in 2020", x= "Producer", y="Power Generation(TWH)")+
-  theme(axis.text.x = element_text(angle = -15, vjust = 1, hjust = .1)) + theme_clean()
+  theme(axis.text.x = element_text(angle = -15, vjust = 1, hjust = .1)) 
 ```
