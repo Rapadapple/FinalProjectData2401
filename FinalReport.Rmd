@@ -248,31 +248,51 @@ energy %>% count(producer)
 energy %>% count(source)
 ```
 
-## Texas/US Power Distribution
+## Texas/US Power Distribution Producer Type
 ```{r}
+#US Power Dist Per Producer Type
+energy %>%
+  filter(producer != "Total Electric Power Industry", source!="Total") %>% 
+  ggplot() + 
+  geom_col(aes(x = producer, y = generation/1000000, fill = source)) +
+  labs(title = "US Power Distribution", x= "Producer", y= "Power Generation(TWH)") +
+  theme(axis.text.x = element_text(angle = -25, vjust = .5, hjust = .1)) 
+
+#TX Power Dist Per Producer Type
 energy %>% 
   filter(producer != "Total Electric Power Industry", state == 'TX', source != 'Total') %>%
   ggplot() + 
   geom_col(aes(x = producer, y = generation/1000000, fill = source)) +
   labs(title = "Texas Power Distribution", x= "Producer", y= "Power Generation(TWH)") +
   theme(axis.text.x = element_text(angle = -25, vjust = .5, hjust = .1)) 
+```
 
+## Source Power Generation Per Year
+```{r}
 #US Power Generation Per Year
 energy %>% 
   filter(producer != "Total Electric Power Industry", state == "US-TOTAL", source != 'Total', year <= 2021) %>% 
   ggplot() + 
   geom_col(aes(x = year, y = generation/1000000, fill = source)) +
-  labs(title = "US Power Generation Per Year", x = "Year", y = "Power Generation(TWH)") + theme_clean()
+  labs(title = "US Power Generation Per Year", x = "Year", y = "Power Generation(TWH)")
+
+#TX Power Generation Per Year
+energy %>% 
+  filter(producer != "Total Electric Power Industry", state == "TX", source != 'Total', year <= 2021) %>% 
+  ggplot() + 
+  geom_col(aes(x = year, y = generation/1000000, fill = source)) +
+  labs(title = "TX Power Generation Per Year", x = "Year", y = "Power Generation(TWH)")
 ```
 
-## Power Distribution over months
+
+## Total Power Distribution Over Months
 ```{r}
 #Total US power distribution over months
 energy %>% 
   filter(producer == "Total Electric Power Industry", state == 'US-TOTAL', source == 'Total') %>% 
   ggplot(aes(group = month, x = month, y = generation/1000000, fill = month))+
   geom_boxplot() +
-  scale_x_continuous(breaks = c(1:12)) + labs(title= "Total US Power distribution over months", x= "Months", y="Power Generation(TWH)" ) + theme_clean()
+  scale_x_continuous(breaks = c(1:12)) + labs(title= "Total US Power distribution over months", x= "Months", y="Power Generation(TWH)" ) 
 
 
 #TX power distribution over months
@@ -281,19 +301,39 @@ energy %>%
   ggplot(aes(group = month, x = month, y = generation/1000000, fill = month))+
   geom_boxplot() +
   scale_x_continuous(breaks = c(1:12))+
-  labs(title = 'TX Power Distribution Over Months', x= "Months", y="Power Generation(TWH)") + theme_clean()
+  labs(title = 'TX Power Distribution Over Months', x= "Months", y="Power Generation(TWH)") 
+```
 
+## Power Distributions over months for 2021
+```{r}
+#US
 energy %>% 
-  filter(producer != "Total Electric Power Industry", state == 'TX', source != 'Total') %>% 
+  filter(producer != "Total Electric Power Industry", state == 'US-TOTAL', source != 'Total', year == 2021) %>% 
+  ggplot()+
+  geom_col(aes(x = month, y = generation/1000000, fill = source)) +
+  labs(title = 'US Power Distribution Per Month', x= "Months", y="Power Generation(TWH)")+
+  scale_x_continuous(breaks = c(1:12))
+#Tx
+energy %>% 
+  filter(producer != "Total Electric Power Industry", state == 'TX', source != 'Total', year == 2021) %>% 
   ggplot()+
   geom_col(aes(x = month, y = generation/1000000, fill = source)) +
   labs(title = 'Texas Power Distribution Per Month', x= "Months", y="Power Generation(TWH)")+
-  scale_x_continuous(breaks = c(1:12)) + theme_clean()
+  scale_x_continuous(breaks = c(1:12))
 ```
 
-## Energy Sources amoung producer types
+## Energy Sources amoung producer types US
 
 ```{r}
+#US Energy Sources Among Producer Types in 2010
+energy %>% 
+  group_by(source, producer) %>% 
+  filter(source != 'Total', year == 2010) %>% 
+  ggplot() + 
+  geom_col(aes(x = producer, y = generation/1000000, fill = source)) +
+  labs(title = "US Energy Sources Among Producer Types in 2020", x= "Producer", y="Power Generation(TWH)")+
+  theme(axis.text.x = element_text(angle = -15, vjust = 1, hjust = .1)) 
+
 #US Energy Sources Among Producer Types in 2020
 energy %>% 
   group_by(source, producer) %>% 
@@ -303,6 +343,19 @@ energy %>%
   labs(title = "US Energy Sources Among Producer Types in 2020", x= "Producer", y="Power Generation(TWH)")+
   theme(axis.text.x = element_text(angle = -15, vjust = 1, hjust = .1)) 
 
+```
+
+
+## Energy Sources amoung producer types TX
+```{r}
+#TX Energy Sources Among Producer Types in 2010
+energy %>% 
+  group_by(source, producer, state) %>% 
+  filter(source != 'Total', year == 2010, state == "TX") %>% 
+  ggplot() + 
+  geom_col(aes(x = producer, y = generation/1000000, fill = source)) +
+  labs(title = "TX Energy Sources Among Producer Types in 2020", x= "Producer", y="Power Generation(TWH)")+
+  theme(axis.text.x = element_text(angle = -15, vjust = 1, hjust = .1)) 
 #TX Energy Sources Among Producer Types in 2020
 energy %>% 
   group_by(source, producer, state) %>% 
@@ -311,4 +364,3 @@ energy %>%
   geom_col(aes(x = producer, y = generation/1000000, fill = source)) +
   labs(title = "TX Energy Sources Among Producer Types in 2020", x= "Producer", y="Power Generation(TWH)")+
   theme(axis.text.x = element_text(angle = -15, vjust = 1, hjust = .1)) 
-```
