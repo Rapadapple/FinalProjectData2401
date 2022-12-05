@@ -119,7 +119,15 @@ ui <- fluidPage(
       
       checkboxInput("facetStatus",
                     "Facet",
-                    value = TRUE)
+                    value = TRUE),
+      
+      selectInput("state1",
+                  label = "State(top)",
+                  choices = unique(energy$state)),
+      
+      selectInput("state2",
+                  label = "State(top)",
+                  choices = unique(energy$state))
     ),
 
     # Main panel for displaying outputs ----
@@ -127,19 +135,46 @@ ui <- fluidPage(
       # Output: HTML table with requested number of observations ----
       plotlyOutput("totalGenPlot",
                    width = "100%",
-                   height = "100%")
+                   height = "100%"),
+      
+      plotlyOutput("totalGenPlot2")
     )
   )
 )
 
 server = function(input, output){
   shinyEnergy = reactive({
-    energy %>% filter(producer == "Total Electric Power Industry", state == "TX", year != 2022, source == input$sources) %>% group_by(Date, source) %>% 
+    energy %>% filter(producer == "Total Electric Power Industry", state == input$state1, year != 2022, source == input$sources) %>% group_by(Date, source) %>% 
+    summarize(total_generation = sum(generation)) %>% mutate(total_generation = total_generation / 1000000)
+  })
+  
+  shinyEnergy2 = reactive({
+    energy %>% filter(producer == "Total Electric Power Industry", state == input$state2, year != 2022, source == input$sources) %>% group_by(Date, source) %>% 
     summarize(total_generation = sum(generation)) %>% mutate(total_generation = total_generation / 1000000)
   })
 
   output$totalGenPlot = renderPlotly({
     fig2 = shinyEnergy() %>% 
+    ggplot() +
+    geom_line(aes(x= Date, y= total_generation, color = source)) +
+    geom_smooth(aes(x = Date, y= total_generation, color = source)) +
+    labs(title = "Texas Total Power Generation Over Time", x = "Date", y = "Power Generation(TWH)") 
+    
+    facetEnergy = reactive({
+      if(input$facetStatus == T){
+        fig2 + facet_wrap(~source)
+      }
+      else{
+        fig2
+      }
+    })
+    
+    fig2 = facetEnergy()
+    ggplotly(fig2, tooltip = c("x", "y", "source"))
+  })
+  
+  output$totalGenPlot2 = renderPlotly({
+    fig2 = shinyEnergy2() %>% 
     ggplot() +
     geom_line(aes(x= Date, y= total_generation, color = source)) +
     geom_smooth(aes(x = Date, y= total_generation, color = source)) +
