@@ -16,7 +16,8 @@ knitr::opts_chunk$set(
 
 ```{r}
 # Load tidyverse for manipulating data
-#Load ggplot2, and plotly for graphing data
+#Load ggplot2 for graphing data
+#Load shiny and plotly for interactive data
 library(tidyverse, warn.conflicts = F)
 library(ggplot2, warn.conflicts = F)
 library(plotly, warn.conflicts = F)
@@ -119,20 +120,20 @@ ui <- fluidPage(
     # Sidebar panel for inputs ----
     sidebarPanel(
       position = "right",
-      
+      # checkbox for source
       checkboxGroupInput("sources", 
         label = h3("Source:"), 
         choices = unique(energy$source),
         selected = "Total"),
-      
+      # checkbox to determine facet status
       checkboxInput("facetStatus",
                     "Facet",
                     value = TRUE),
-      
+      # input selection for what state to graph on the top graph
       selectInput("state1",
                   label = "State(top)",
                   choices = unique(energy$state)),
-      
+      # input selection for what state to graph on the bottom graph
       selectInput("state2",
                   label = "State(bottom)",
                   choices = unique(energy$state))
@@ -140,11 +141,11 @@ ui <- fluidPage(
 
     # Main panel for displaying outputs ----
     mainPanel(
-      # Output: HTML table with requested number of observations ----
+      #output the top plot
       plotlyOutput("totalGenPlot",
                    width = "100%",
                    height = "100%"),
-      
+      #output the bottom plot
       plotlyOutput("totalGenPlot2")
     )
   )
@@ -169,7 +170,7 @@ server = function(input, output){
     geom_line(aes(x= Date, y= total_generation, color = source)) +
     geom_smooth(aes(x = Date, y= total_generation, color = source)) +
     labs(x = "Date", y = "Power Generation(TWH)") 
-    
+    # facetEnergy is reactive so we can change its status, has source input and changes title based on the state check box
     facetEnergy = reactive({
       if(input$facetStatus == T){
         fig2 = fig2 + facet_wrap(~source)
@@ -181,9 +182,10 @@ server = function(input, output){
     })
     
     fig2 = facetEnergy()
+    #create the plotly
     ggplotly(fig2, tooltip = c("x", "y", "source"))
   })
-  
+  #second graph is constructed similarly to the graph above
   output$totalGenPlot2 = renderPlotly({
     fig2 = shinyEnergy2() %>% 
     ggplot() +
@@ -232,12 +234,12 @@ ui <- fluidPage(
     # Sidebar panel for inputs ----
     sidebarPanel(
       position = "right",
-      
+      # checkbox for different sources
       checkboxGroupInput("sources", 
         label = h3("Source:"), 
         choices = unique(energy$source),
         selected = "Total"),
-      
+      # checkbox for whether to facet graph or not
       checkboxInput("facetStatus",
                     "Facet",
                     value = TRUE),
@@ -250,20 +252,20 @@ ui <- fluidPage(
     mainPanel(
       # Output: Verbatim text for data summary ----
       verbatimTextOutput("summary"),
-      # Output: HTML table with requested number of observations ----
       plotlyOutput("totalGenPlot")
     )
   )
 )
 
 server = function(input, output){
+  # reactive in order to get what source to filter by
   shinyEnergy = reactive({
     energy %>% filter(producer == "Total Electric Power Industry", state != "US-TOTAL", year != 2022, source == input$sources) %>% group_by(Date, source) %>% 
     summarize(total_generation = sum(generation)) %>% mutate(total_generation = total_generation / 1000000)
   })
   
   
-  
+  #render the plot
   output$totalGenPlot = renderPlotly({
     fig2 = shinyEnergy() %>% 
     ggplot() +
@@ -271,6 +273,7 @@ server = function(input, output){
     geom_smooth(aes(x = Date, y= total_generation, color = source)) +
     labs(title = "Total Power Generation Over Time", x = "Date", y = "Power Generation(TWH)") 
     
+    # reactive function to get facet status
     facetEnergy = reactive({
       if(input$facetStatus == T){
         fig2 + facet_wrap(~source)
@@ -281,6 +284,7 @@ server = function(input, output){
     })
     
     fig2 = facetEnergy()
+    # create a plotly from ggplot
     ggplotly(fig2, tooltip = c("x", "y", "source"))
   })
 }
