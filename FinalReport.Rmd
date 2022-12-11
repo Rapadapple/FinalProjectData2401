@@ -6,6 +6,8 @@ output: html_document
 runtime: shiny
 source: https://www.kaggle.com/datasets/kevinmorgado/us-energy-generation-2001-2022
 ---
+## In this data set we're looking at the 17 sustainable development goals of the UN. Within these 17 goals we saw that the UN's energy goal could be a potentially high value benefactor of data science to help curb the generation of fossil fuels and promote green energy. We chose this topic with the end goal of finding interesting discoveries that could provide actionable data to the every day consumer and help educate their decision to dictate their personal energy needs within current trends and available sources today. We hope that through our visualization of trending energy generation, production, and interactive comparisons an individual may be better informed to make their steps towards a greener future!
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
