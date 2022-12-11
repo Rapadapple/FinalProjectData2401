@@ -134,7 +134,7 @@ ui <- fluidPage(
                   choices = unique(energy$state)),
       
       selectInput("state2",
-                  label = "State(top)",
+                  label = "State(bottom)",
                   choices = unique(energy$state))
     ),
 
@@ -168,15 +168,16 @@ server = function(input, output){
     ggplot() +
     geom_line(aes(x= Date, y= total_generation, color = source)) +
     geom_smooth(aes(x = Date, y= total_generation, color = source)) +
-    labs(title = "Texas Total Power Generation Over Time", x = "Date", y = "Power Generation(TWH)") 
+    labs(x = "Date", y = "Power Generation(TWH)") 
     
     facetEnergy = reactive({
       if(input$facetStatus == T){
-        fig2 + facet_wrap(~source)
+        fig2 = fig2 + facet_wrap(~source)
       }
       else{
         fig2
       }
+      fig2 = fig2 + labs(title = paste(input$state1, "Total Power Generation Over Time"))
     })
     
     fig2 = facetEnergy()
@@ -188,15 +189,16 @@ server = function(input, output){
     ggplot() +
     geom_line(aes(x= Date, y= total_generation, color = source)) +
     geom_smooth(aes(x = Date, y= total_generation, color = source)) +
-    labs(title = "Texas Total Power Generation Over Time", x = "Date", y = "Power Generation(TWH)") 
+    labs(x = "Date", y = "Power Generation(TWH)") 
     
     facetEnergy = reactive({
       if(input$facetStatus == T){
-        fig2 + facet_wrap(~source)
+        fig2 = fig2 + facet_wrap(~source)
       }
       else{
         fig2
       }
+      fig2 = fig2 + labs(title = paste(input$state2, "Total Power Generation Over Time"))
     })
     
     fig2 = facetEnergy()
@@ -224,7 +226,7 @@ energy %>%
 #second shiny to display power generation for the US 
 ui <- fluidPage(
   # App title ----
-  titlePanel("Total Power Generation Over Time"),
+  titlePanel("US Total Power Generation Over Time"),
   # Sidebar layout with a input and output definitions ----
   sidebarLayout(
     # Sidebar panel for inputs ----
