@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
 # Load tidyverse for manipulating data
 #Load ggplot2 for graphing data
 #Load shiny and plotly for interactive graphs
+
 library(tidyverse, warn.conflicts = F)
 library(ggplot2, warn.conflicts = F)
 library(plotly, warn.conflicts = F)
@@ -120,23 +121,33 @@ ui <- fluidPage(
     # Sidebar panel for inputs ----
     sidebarPanel(
       position = "right",
-      
+      # checkbox for source
       checkboxGroupInput("sources", 
         label = h3("Source:"), 
         choices = unique(energy$source),
         selected = "Total"),
-      
+      # checkbox to determine facet status
       checkboxInput("facetStatus",
                     "Facet",
-                    value = TRUE)
+                    value = TRUE),
+      # input selection for what state to graph on the top graph
+      selectInput("state1",
+                  label = "State(top)",
+                  choices = unique(energy$state)),
+      # input selection for what state to graph on the bottom graph
+      selectInput("state2",
+                  label = "State(bottom)",
+                  choices = unique(energy$state))
     ),
 
     # Main panel for displaying outputs ----
     mainPanel(
-      # Output: HTML table with requested number of observations ----
+      #output the top plot
       plotlyOutput("totalGenPlot",
                    width = "100%",
-                   height = "100%")
+                   height = "100%"),
+      #output the bottom plot
+      plotlyOutput("totalGenPlot2")
     )
   )
 )
@@ -144,7 +155,12 @@ ui <- fluidPage(
 server = function(input, output){
   #Use reactive so that we can interact with the shiny
   shinyEnergy = reactive({
-    energy %>% filter(producer == "Total Electric Power Industry", state == "TX", year != 2022, source == input$sources) %>% group_by(Date, source) %>% 
+    energy %>% filter(producer == "Total Electric Power Industry", state == input$state1, year != 2022, source == input$sources) %>% group_by(Date, source) %>% 
+    summarize(total_generation = sum(generation)) %>% mutate(total_generation = total_generation / 1000000)
+  })
+  
+  shinyEnergy2 = reactive({
+    energy %>% filter(producer == "Total Electric Power Industry", state == input$state2, year != 2022, source == input$sources) %>% group_by(Date, source) %>% 
     summarize(total_generation = sum(generation)) %>% mutate(total_generation = total_generation / 1000000)
   })
 
@@ -154,15 +170,38 @@ server = function(input, output){
     ggplot() +
     geom_line(aes(x= Date, y= total_generation, color = source)) +
     geom_smooth(aes(x = Date, y= total_generation, color = source)) +
-    labs(title = "Texas Total Power Generation Over Time", x = "Date", y = "Power Generation(TWH)") 
-    
+    labs(x = "Date", y = "Power Generation(TWH)") 
+    # facetEnergy is reactive so we can change its status, has source input and changes title based on the state check box
     facetEnergy = reactive({
       if(input$facetStatus == T){
-        fig2 + facet_wrap(~source)
+        fig2 = fig2 + facet_wrap(~source)
       }
       else{
         fig2
       }
+      fig2 = fig2 + labs(title = paste(input$state1, "Total Power Generation Over Time"))
+    })
+    
+    fig2 = facetEnergy()
+    #create the plotly
+    ggplotly(fig2, tooltip = c("x", "y", "source"))
+  })
+  #second graph is constructed similarly to the graph above
+  output$totalGenPlot2 = renderPlotly({
+    fig2 = shinyEnergy2() %>% 
+    ggplot() +
+    geom_line(aes(x= Date, y= total_generation, color = source)) +
+    geom_smooth(aes(x = Date, y= total_generation, color = source)) +
+    labs(x = "Date", y = "Power Generation(TWH)") 
+    
+    facetEnergy = reactive({
+      if(input$facetStatus == T){
+        fig2 = fig2 + facet_wrap(~source)
+      }
+      else{
+        fig2
+      }
+      fig2 = fig2 + labs(title = paste(input$state2, "Total Power Generation Over Time"))
     })
     
     fig2 = facetEnergy()
@@ -191,18 +230,18 @@ energy %>%
 #second shiny to display power generation for the US 
 ui <- fluidPage(
   # App title ----
-  titlePanel("Total Power Generation Over Time"),
+  titlePanel("US Total Power Generation Over Time"),
   # Sidebar layout with a input and output definitions ----
   sidebarLayout(
     # Sidebar panel for inputs ----
     sidebarPanel(
       position = "right",
-      
+      # checkbox for different sources
       checkboxGroupInput("sources", 
         label = h3("Source:"), 
         choices = unique(energy$source),
         selected = "Total"),
-      
+      # checkbox for whether to facet graph or not
       checkboxInput("facetStatus",
                     "Facet",
                     value = TRUE),
@@ -215,20 +254,20 @@ ui <- fluidPage(
     mainPanel(
       # Output: Verbatim text for data summary ----
       verbatimTextOutput("summary"),
-      # Output: HTML table with requested number of observations ----
       plotlyOutput("totalGenPlot")
     )
   )
 )
 
 server = function(input, output){
+  # reactive in order to get what source to filter by
   shinyEnergy = reactive({
     energy %>% filter(producer == "Total Electric Power Industry", state != "US-TOTAL", year != 2022, source == input$sources) %>% group_by(Date, source) %>% 
     summarize(total_generation = sum(generation)) %>% mutate(total_generation = total_generation / 1000000)
   })
   
   
-  
+  #render the plot
   output$totalGenPlot = renderPlotly({
     fig2 = shinyEnergy() %>% 
     ggplot() +
@@ -236,6 +275,7 @@ server = function(input, output){
     geom_smooth(aes(x = Date, y= total_generation, color = source)) +
     labs(title = "Total Power Generation Over Time", x = "Date", y = "Power Generation(TWH)") 
     
+    # reactive function to get facet status
     facetEnergy = reactive({
       if(input$facetStatus == T){
         fig2 + facet_wrap(~source)
@@ -246,8 +286,7 @@ server = function(input, output){
     })
     
     fig2 = facetEnergy()
-    
-    
+    # create a plotly from ggplot
     ggplotly(fig2, tooltip = c("x", "y", "source"))
   })
 }
@@ -258,6 +297,7 @@ shinyApp(ui = ui, server = server)
 ## Producer Data Analysis
 
 ```{r}
+#tables to display producer columns and energy sources
 energy %>% count(producer)
 
 energy %>% count(source)
@@ -265,7 +305,8 @@ energy %>% count(source)
 
 ## Texas/US Power Distribution Producer Type
 ```{r}
-#US Power Dist Per Producer Type
+# US Power Source Distribution Per Producer Type. 
+## This is meant to show the level of usage among energy source types used within US Energy industry categories. 
 energy %>%
   filter(producer != "Total Electric Power Industry", source!="Total") %>% 
   ggplot() + 
@@ -273,7 +314,8 @@ energy %>%
   labs(title = "US Power Distribution", x= "Producer", y= "Power Generation(TWH)") +
   theme(axis.text.x = element_text(angle = -25, vjust = .5, hjust = .1)) 
 
-#TX Power Dist Per Producer Type
+# TX Power Source Distribution Per Producer Type.
+## This is meant to display the same comparison as the US graph, but in Texas. 
 energy %>% 
   filter(producer != "Total Electric Power Industry", state == 'TX', source != 'Total') %>%
   ggplot() + 
@@ -284,14 +326,16 @@ energy %>%
 
 ## Source Power Generation Per Year
 ```{r}
-#US Power Generation Per Year
+# US Power Source Generation Per Year
+## This is meant to show the change of power sources used in the US on a chronological scale. 
 energy %>% 
   filter(producer != "Total Electric Power Industry", state == "US-TOTAL", source != 'Total', year <= 2021) %>% 
   ggplot() + 
   geom_col(aes(x = year, y = generation/1000000, fill = source)) +
   labs(title = "US Power Generation Per Year", x = "Year", y = "Power Generation(TWH)")
 
-#TX Power Generation Per Year
+# TX Power Source Generation Per Year
+## This is meant to show the change of power sources used on a chronological scale in Texas.
 energy %>% 
   filter(producer != "Total Electric Power Industry", state == "TX", source != 'Total', year <= 2021) %>% 
   ggplot() + 
@@ -302,7 +346,8 @@ energy %>%
 
 ## Total Power Distribution Over Months
 ```{r}
-#Total US power distribution over months
+# Total US power distribution over months
+## Graph is meant to create a visual on power generation over months and used as a control for comparison for states and their power generation over months. This is to set precedent for the next pair of graphs. 
 energy %>% 
   filter(producer == "Total Electric Power Industry", state == 'US-TOTAL', source == 'Total') %>% 
   ggplot(aes(group = month, x = month, y = generation/1000000, fill = month))+
@@ -310,7 +355,8 @@ energy %>%
   scale_x_continuous(breaks = c(1:12)) + labs(title= "Total US Power distribution over months", x= "Months", y="Power Generation(TWH)" ) 
 
 
-#TX power distribution over months
+# TX power distribution over months
+## Graph is meant to show Texas power usage in comparison to US. This is to set precedent for the next pair of graphs.
 energy %>% 
   filter(producer == "Total Electric Power Industry", state == 'TX', source == 'Total') %>% 
   ggplot(aes(group = month, x = month, y = generation/1000000, fill = month))+
@@ -321,14 +367,16 @@ energy %>%
 
 ## Power Distributions over months for 2021
 ```{r}
-#US
+# US Power Distributions over months for 2021
+## This graph shows this use of power sources in the US over a twelve month period in the year 2021.
 energy %>% 
   filter(producer != "Total Electric Power Industry", state == 'US-TOTAL', source != 'Total', year == 2021) %>% 
   ggplot()+
   geom_col(aes(x = month, y = generation/1000000, fill = source)) +
   labs(title = 'US Power Distribution Per Month', x= "Months", y="Power Generation(TWH)")+
   scale_x_continuous(breaks = c(1:12))
-#Tx
+# TX Power Distributions over months for 2021
+## This graph shows this use of power sources in the TX over a twelve month period in the year 2021.
 energy %>% 
   filter(producer != "Total Electric Power Industry", state == 'TX', source != 'Total', year == 2021) %>% 
   ggplot()+
@@ -340,16 +388,20 @@ energy %>%
 ## Energy Sources amoung producer types US
 
 ```{r}
-#US Energy Sources Among Producer Types in 2010
+# US Energy Sources Among Producer Types in 2010
+## This graph is meant to be used in comparison to the graph proceeding it 
+## displaying the power source distributions among energy producers in the US in 2010
 energy %>% 
   group_by(source, producer) %>% 
   filter(source != 'Total', year == 2010) %>% 
   ggplot() + 
   geom_col(aes(x = producer, y = generation/1000000, fill = source)) +
-  labs(title = "US Energy Sources Among Producer Types in 2020", x= "Producer", y="Power Generation(TWH)")+
+  labs(title = "US Energy Sources Among Producer Types in 2010", x= "Producer", y="Power Generation(TWH)")+
   theme(axis.text.x = element_text(angle = -15, vjust = 1, hjust = .1)) 
 
-#US Energy Sources Among Producer Types in 2020
+# US Energy Sources Among Producer Types in 2020
+## This graph is meant to be used in comparison to the graph proceeding it 
+## displaying the power source distributions among energy producers in the US in 2020
 energy %>% 
   group_by(source, producer) %>% 
   filter(source != 'Total', year == 2020) %>% 
@@ -363,15 +415,19 @@ energy %>%
 
 ## Energy Sources amoung producer types TX
 ```{r}
-#TX Energy Sources Among Producer Types in 2010
+# TX Energy Sources Among Producer Types in 2010
+## This graph is meant to be used in comparison to the graph proceeding it 
+## displaying the power source distributions among energy producers in Texas in 2010
 energy %>% 
   group_by(source, producer, state) %>% 
   filter(source != 'Total', year == 2010, state == "TX") %>% 
   ggplot() + 
   geom_col(aes(x = producer, y = generation/1000000, fill = source)) +
-  labs(title = "TX Energy Sources Among Producer Types in 2020", x= "Producer", y="Power Generation(TWH)")+
+  labs(title = "TX Energy Sources Among Producer Types in 2010", x= "Producer", y="Power Generation(TWH)")+
   theme(axis.text.x = element_text(angle = -15, vjust = 1, hjust = .1)) 
-#TX Energy Sources Among Producer Types in 2020
+# TX Energy Sources Among Producer Types in 2020
+## This graph is meant to be used in comparison to the graph proceeding it 
+## displaying the power source distributions among energy producers in Texas in 2020
 energy %>% 
   group_by(source, producer, state) %>% 
   filter(source != 'Total', year == 2020, state == "TX") %>% 
@@ -379,3 +435,4 @@ energy %>%
   geom_col(aes(x = producer, y = generation/1000000, fill = source)) +
   labs(title = "TX Energy Sources Among Producer Types in 2020", x= "Producer", y="Power Generation(TWH)")+
   theme(axis.text.x = element_text(angle = -15, vjust = 1, hjust = .1)) 
+```
