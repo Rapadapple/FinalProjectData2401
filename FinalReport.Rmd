@@ -134,11 +134,13 @@ ui <- fluidPage(
       # input selection for what state to graph on the top graph
       selectInput("state1",
                   label = "State(top)",
-                  choices = unique(energy$state)),
+                  choices = unique(energy$state),
+                  selected = "TX"),
       # input selection for what state to graph on the bottom graph
       selectInput("state2",
                   label = "State(bottom)",
-                  choices = unique(energy$state))
+                  choices = unique(energy$state),
+                  selected = "CA")
     ),
 
     # Main panel for displaying outputs ----
