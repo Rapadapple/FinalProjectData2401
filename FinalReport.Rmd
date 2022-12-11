@@ -4,6 +4,7 @@ author: "Kevin Sheard, John Beall, Andrew Vo"
 date: "`r Sys.Date()`"
 output: slidy_presentation
 runtime: shiny
+source: https://www.kaggle.com/datasets/kevinmorgado/us-energy-generation-2001-2022
 ---
 
 ```{r setup, include=FALSE}
