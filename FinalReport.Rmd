@@ -254,6 +254,7 @@ shinyApp(ui = ui, server = server)
 ## Producer Data Analysis
 
 ```{r}
+#tables to display producer columns and energy sources
 energy %>% count(producer)
 
 energy %>% count(source)
@@ -261,7 +262,8 @@ energy %>% count(source)
 
 ## Texas/US Power Distribution Producer Type
 ```{r}
-#US Power Dist Per Producer Type
+# US Power Source Distribution Per Producer Type. 
+## This is meant to show the level of usage among energy source types used within US Energy industry categories. 
 energy %>%
   filter(producer != "Total Electric Power Industry", source!="Total") %>% 
   ggplot() + 
@@ -269,7 +271,8 @@ energy %>%
   labs(title = "US Power Distribution", x= "Producer", y= "Power Generation(TWH)") +
   theme(axis.text.x = element_text(angle = -25, vjust = .5, hjust = .1)) 
 
-#TX Power Dist Per Producer Type
+# TX Power Source Distribution Per Producer Type.
+## This is meant to display the same comparison as the US graph, but in Texas. 
 energy %>% 
   filter(producer != "Total Electric Power Industry", state == 'TX', source != 'Total') %>%
   ggplot() + 
@@ -280,14 +283,16 @@ energy %>%
 
 ## Source Power Generation Per Year
 ```{r}
-#US Power Generation Per Year
+# US Power Source Generation Per Year
+## This is meant to show the change of power sources used in the US on a chronological scale. 
 energy %>% 
   filter(producer != "Total Electric Power Industry", state == "US-TOTAL", source != 'Total', year <= 2021) %>% 
   ggplot() + 
   geom_col(aes(x = year, y = generation/1000000, fill = source)) +
   labs(title = "US Power Generation Per Year", x = "Year", y = "Power Generation(TWH)")
 
-#TX Power Generation Per Year
+# TX Power Source Generation Per Year
+## This is meant to show the change of power sources used on a chronological scale in Texas.
 energy %>% 
   filter(producer != "Total Electric Power Industry", state == "TX", source != 'Total', year <= 2021) %>% 
   ggplot() + 
@@ -298,7 +303,8 @@ energy %>%
 
 ## Total Power Distribution Over Months
 ```{r}
-#Total US power distribution over months
+# Total US power distribution over months
+## Graph is meant to create a visual on power generation over months and used as a control for comparison for states and their power generation over months. This is to set precedent for the next pair of graphs. 
 energy %>% 
   filter(producer == "Total Electric Power Industry", state == 'US-TOTAL', source == 'Total') %>% 
   ggplot(aes(group = month, x = month, y = generation/1000000, fill = month))+
@@ -306,7 +312,8 @@ energy %>%
   scale_x_continuous(breaks = c(1:12)) + labs(title= "Total US Power distribution over months", x= "Months", y="Power Generation(TWH)" ) 
 
 
-#TX power distribution over months
+# TX power distribution over months
+## Graph is meant to show Texas power usage in comparison to US. This is to set precedent for the next pair of graphs.
 energy %>% 
   filter(producer == "Total Electric Power Industry", state == 'TX', source == 'Total') %>% 
   ggplot(aes(group = month, x = month, y = generation/1000000, fill = month))+
@@ -317,14 +324,16 @@ energy %>%
 
 ## Power Distributions over months for 2021
 ```{r}
-#US
+# US Power Distributions over months for 2021
+## This graph shows this use of power sources in the US over a twelve month period in the year 2021.
 energy %>% 
   filter(producer != "Total Electric Power Industry", state == 'US-TOTAL', source != 'Total', year == 2021) %>% 
   ggplot()+
   geom_col(aes(x = month, y = generation/1000000, fill = source)) +
   labs(title = 'US Power Distribution Per Month', x= "Months", y="Power Generation(TWH)")+
   scale_x_continuous(breaks = c(1:12))
-#Tx
+# TX Power Distributions over months for 2021
+## This graph shows this use of power sources in the TX over a twelve month period in the year 2021.
 energy %>% 
   filter(producer != "Total Electric Power Industry", state == 'TX', source != 'Total', year == 2021) %>% 
   ggplot()+
@@ -336,16 +345,20 @@ energy %>%
 ## Energy Sources amoung producer types US
 
 ```{r}
-#US Energy Sources Among Producer Types in 2010
+# US Energy Sources Among Producer Types in 2010
+## This graph is meant to be used in comparison to the graph proceeding it 
+## displaying the power source distributions among energy producers in the US in 2010
 energy %>% 
   group_by(source, producer) %>% 
   filter(source != 'Total', year == 2010) %>% 
   ggplot() + 
   geom_col(aes(x = producer, y = generation/1000000, fill = source)) +
-  labs(title = "US Energy Sources Among Producer Types in 2020", x= "Producer", y="Power Generation(TWH)")+
+  labs(title = "US Energy Sources Among Producer Types in 2010", x= "Producer", y="Power Generation(TWH)")+
   theme(axis.text.x = element_text(angle = -15, vjust = 1, hjust = .1)) 
 
-#US Energy Sources Among Producer Types in 2020
+# US Energy Sources Among Producer Types in 2020
+## This graph is meant to be used in comparison to the graph proceeding it 
+## displaying the power source distributions among energy producers in the US in 2020
 energy %>% 
   group_by(source, producer) %>% 
   filter(source != 'Total', year == 2020) %>% 
@@ -359,15 +372,19 @@ energy %>%
 
 ## Energy Sources amoung producer types TX
 ```{r}
-#TX Energy Sources Among Producer Types in 2010
+# TX Energy Sources Among Producer Types in 2010
+## This graph is meant to be used in comparison to the graph proceeding it 
+## displaying the power source distributions among energy producers in Texas in 2010
 energy %>% 
   group_by(source, producer, state) %>% 
   filter(source != 'Total', year == 2010, state == "TX") %>% 
   ggplot() + 
   geom_col(aes(x = producer, y = generation/1000000, fill = source)) +
-  labs(title = "TX Energy Sources Among Producer Types in 2020", x= "Producer", y="Power Generation(TWH)")+
+  labs(title = "TX Energy Sources Among Producer Types in 2010", x= "Producer", y="Power Generation(TWH)")+
   theme(axis.text.x = element_text(angle = -15, vjust = 1, hjust = .1)) 
-#TX Energy Sources Among Producer Types in 2020
+# TX Energy Sources Among Producer Types in 2020
+## This graph is meant to be used in comparison to the graph proceeding it 
+## displaying the power source distributions among energy producers in Texas in 2020
 energy %>% 
   group_by(source, producer, state) %>% 
   filter(source != 'Total', year == 2020, state == "TX") %>% 
@@ -375,3 +392,4 @@ energy %>%
   geom_col(aes(x = producer, y = generation/1000000, fill = source)) +
   labs(title = "TX Energy Sources Among Producer Types in 2020", x= "Producer", y="Power Generation(TWH)")+
   theme(axis.text.x = element_text(angle = -15, vjust = 1, hjust = .1)) 
+```
