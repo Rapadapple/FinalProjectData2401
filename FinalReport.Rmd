@@ -2,7 +2,7 @@
 title: "United States Energy Generation 2001-2022"
 author: "Kevin Sheard, John Beall, Andrew Vo"
 date: "`r Sys.Date()`"
-output: slidy_presentation
+output: html_document
 runtime: shiny
 source: https://www.kaggle.com/datasets/kevinmorgado/us-energy-generation-2001-2022
 ---
@@ -14,6 +14,8 @@ knitr::opts_chunk$set(
 	warning = FALSE
 )
 ```
+
+# Introduction
 
 ```{r}
 # Load tidyverse for manipulating data
@@ -46,12 +48,12 @@ energy = energy %>% select(-`ID`)
 energy$Date<-as.Date(with(energy,paste(year,month,Day = 1,sep="-")),"%Y-%m-%d")
 glimpse(energy)
 ```
-- library(tidyverse) Why else? Makes things tidy
-- library(ggplot2) Because graphs
-- library(plotly) Because graphs with shiny
-- library(shiny) Whats better than data? Interactive data!
-- library(ggthemes) Gotta be fancy
 
+-   library(tidyverse) Why else? Makes things tidy
+-   library(ggplot2) Because graphs
+-   library(plotly) Because graphs with shiny
+-   library(shiny) Whats better than data? Interactive data!
+-   library(ggthemes) Gotta be fancy
 
 ## US Power Generation
 
@@ -307,6 +309,7 @@ energy %>% count(source)
 ```
 
 ## Texas/US Power Distribution Producer Type
+
 ```{r}
 # US Power Source Distribution Per Producer Type. 
 ## This is meant to show the level of usage among energy source types used within US Energy industry categories. 
@@ -328,6 +331,7 @@ energy %>%
 ```
 
 ## Source Power Generation Per Year
+
 ```{r}
 # US Power Source Generation Per Year
 ## This is meant to show the change of power sources used in the US on a chronological scale. 
@@ -346,8 +350,8 @@ energy %>%
   labs(title = "TX Power Generation Per Year", x = "Year", y = "Power Generation(TWH)")
 ```
 
-
 ## Total Power Distribution Over Months
+
 ```{r}
 # Total US power distribution over months
 ## Graph is meant to create a visual on power generation over months and used as a control for comparison for states and their power generation over months. This is to set precedent for the next pair of graphs. 
@@ -369,6 +373,7 @@ energy %>%
 ```
 
 ## Power Distributions over months for 2021
+
 ```{r}
 # US Power Distributions over months for 2021
 ## This graph shows this use of power sources in the US over a twelve month period in the year 2021.
@@ -415,8 +420,8 @@ energy %>%
 
 ```
 
-
 ## Energy Sources amoung producer types TX
+
 ```{r}
 # TX Energy Sources Among Producer Types in 2010
 ## This graph is meant to be used in comparison to the graph proceeding it 
