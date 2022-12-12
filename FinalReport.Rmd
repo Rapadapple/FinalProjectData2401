@@ -44,7 +44,7 @@ energy = read_csv("archive/organised_Gen.csv")
 This data was collected from Kaggle titled [US Energy Generation 2001-2022](https://www.kaggle.com/datasets/kevinmorgado/us-energy-generation-2001-2022), which is a cleaned up data set adapted from the [US Energy Information Administration](https://www.eia.gov/electricity/). The Kaggle CSV was created by Kevin Morgado and is updated annually as new information is uploaded from the Energy Information Administration(EIA).
 
 ## Data Reading and Cleaning
-This data was originally a CSV so we used the read_csv function to turn that CSV into a data set and stored it into an object called "energy". The original column names were a hassle to type so we created new column names. The energy data set also contained an erroneous ID column that was not necessary so we deleted it. Lastly we created a new column called Date that was a combination of the month and year columns so that we could create time series graphs.
+This data was originally a CSV so we used the read_csv function to turn that CSV into a data set and stored it into an object called "energy". The original column names were messy to type so we created new column names. The energy data set also contained an erroneous ID column that was not necessary so we deleted it. Lastly we created a new column called Date that was a combination of the month and year columns so that we could create time series graphs.
 
 ```{r}
 #renaming the columns and removing the "ID" column
