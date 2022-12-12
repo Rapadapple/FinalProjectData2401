@@ -6,7 +6,9 @@ output: html_document
 runtime: shiny
 source: https://www.kaggle.com/datasets/kevinmorgado/us-energy-generation-2001-2022
 ---
-## In this data set we're looking at the 17 sustainable development goals of the UN. Within these 17 goals we saw that the UN's energy goal could be a potentially high value benefactor of data science to help curb the generation of fossil fuels and promote green energy. We chose this topic with the end goal of finding interesting discoveries that could provide actionable data to the every day consumer and help educate their decision to dictate their personal energy needs within current trends and available sources today. We hope that through our visualization of trending energy generation, production, and interactive comparisons an individual may be better informed to make their steps towards a greener future!
+# Introduction
+
+In this data set we're looking at the 17 sustainable development goals of the UN. Within these 17 goals we saw that the UN's energy goal could be a potentially high value benefactor of data science to help curb the generation of fossil fuels and promote green energy. We chose this topic with the end goal of finding interesting discoveries that could provide actionable data to the every day consumer and help educate their decision to dictate their personal energy needs within current trends and available sources today. We hope that through our visualization of trending energy generation, production, and interactive comparisons an individual may be better informed to make their steps towards a greener future!
 
 
 ```{r setup, include=FALSE}
@@ -17,12 +19,12 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Introduction
 
 ```{r}
 # Load tidyverse for manipulating data
-#Load ggplot2 for graphing data
-#Load shiny and plotly for interactive graphs
+# Load ggplot2 for graphing data
+# Load shiny and plotly for interactive graphs
+# Load ggthemes for better aesthetics
 
 library(tidyverse, warn.conflicts = F)
 library(ggplot2, warn.conflicts = F)
@@ -37,25 +39,37 @@ energy = read_csv("archive/organised_Gen.csv")
 
 ```
 
+# Data Preparation
+## Source
+This data was collected from Kaggle titled [US Energy Generation 2001-2022](https://www.kaggle.com/datasets/kevinmorgado/us-energy-generation-2001-2022), which is a cleaned up data set adapted from the [US Energy Information Administration](https://www.eia.gov/electricity/). The Kaggle CSV was created by Kevin Morgado and is updated annually as new information is uploaded from the Energy Information Administration(EIA).
+
+## Data Reading and Cleaning
+This data was originally a CSV so we used the read_csv function to turn that CSV into a data set and stored it into an object called "energy". The original column names were a hassle to type so we created new column names. The energy data set also contained an erroneous ID column that was not necessary so we deleted it. Lastly we created a new column called Date that was a combination of the month and year columns so that we could create time series graphs.
+
 ```{r}
 #renaming the columns and removing the "ID" column
 colnames(energy) = c("ID", "year", "month", "state", "producer", "source", "generation")
 energy = energy %>% select(-`ID`)
+#adjusting the dates so that they can used with a time series graph
+energy$Date<-as.Date(with(energy,paste(year,month,Day = 1,sep="-")),"%Y-%m-%d")
 ```
 
 ## Glimpse of the Energy Dataset
 
 ```{r}
-#adjusting the dates so that they can used with a time series graph
-energy$Date<-as.Date(with(energy,paste(year,month,Day = 1,sep="-")),"%Y-%m-%d")
 glimpse(energy)
 ```
 
--   library(tidyverse) Why else? Makes things tidy
--   library(ggplot2) Because graphs
--   library(plotly) Because graphs with shiny
--   library(shiny) Whats better than data? Interactive data!
--   library(ggthemes) Gotta be fancy
+| **Variable**   | **explanation**                                                                               |
+|----------------|-----------------------------------------------------------------------------------------------|
+| **year**       | the year that the power was generated                                                         |
+| **month**      | the month that the power was generated                                                        |
+| **state**      | the state that produced the power                                                             |
+| **producer**   | the type of producer who created the power(industrial power, commercial power,...)            |
+| **source**     | what created the power (nuclear, coal, petroleum,...)                                         |
+| **generation** | the amount of power generated in Megawatt-hours                                               |
+| **Date**       | the date in {year, month, day} format, the day is automatically set to the first of the month |
+
 
 ## US Power Generation
 
