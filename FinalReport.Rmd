@@ -355,8 +355,8 @@ energy %>%
 #theme adjusted to create readable labels
 ```
 
-To better understand where the distribution of power is coming from for the US in general.
-
+To better understand where the distribution of power is coming from for the US in general. This graph is a summation of all energy source usage despite increases or decreases from the changes over time. 
+ 
 
 ```{r}
 # TX Power Source Distribution Per Producer Type.
@@ -370,8 +370,7 @@ energy %>%
 #theme adjusted to create readable labels
 ```
 
-To better understand where the distribution of power is coming from for TX specifically, we can notice that TX more heavily relies on Independent Power Producers. Probably due to our independent energy grid. 
-
+To better understand where the distribution of power is coming from for TX specifically, we can notice that TX more heavily relies on Independent Power Producers. Probably due to our independent energy grid. This graph uses the same standards as the US graph above without regard of increases or decreases over the time frame of this data set.
 
 ## Source Power Generation Per Year
 
