@@ -460,3 +460,7 @@ energy %>%
   labs(title = "TX Energy Sources Among Producer Types in 2020", x= "Producer", y="Power Generation(TWH)")+
   theme(axis.text.x = element_text(angle = -15, vjust = 1, hjust = .1)) 
 ```
+## In Conclusion
+- Fossil fuels have been a huge detriment to our environment and we want to educate the audience with insight towards energy's evolution to combat fossil fuels and possibly influence one's decision to enact upon such information (with the exception of traffic blockers and vandals).
+- We ultimately see in this analysis the major decline of coal, the budding rise of green energy, and the titanic gain in natural gas. The US is headed towards a better direction and, though not the most ideal outcomes have been seen, we are in much better shape than in times past and making the great steps for a more sustainable future.
+- For general purposes we this dataset is fit to serve, but there is much more room for discovery within. For instance there is more room for analysis on such as deeper comparisons between energy sources and US comparisons to states. Another possibility is the ability for one to dive deeper and hyper-focus on a states particular energy needs. Perhaps an analysis of industries and their differentiation would be highly informative as well. The only constraint is time and benefit. 
