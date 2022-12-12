@@ -8,7 +8,7 @@ source: https://www.kaggle.com/datasets/kevinmorgado/us-energy-generation-2001-2
 ---
 # Introduction
 
-In this data set we're looking at the 17 sustainable development goals of the UN. Within these 17 goals we saw that the UN's energy goal could be a potentially high value benefactor of data science to help curb the generation of fossil fuels and promote green energy. We chose this topic with the end goal of finding interesting discoveries that could provide actionable data to the every day consumer and help educate their decision to dictate their personal energy needs within current trends and available sources today. We hope that through our visualization of trending energy generation, production, and interactive comparisons an individual may be better informed to make their steps towards a greener future!
+Fossil fuels have been a huge detriment to our environment and we want to educate the audience with insight towards energy's evolution to combat fossil fuels and possibly influence one's decision to enact upon such information (with the exception of traffic blockers and vandals).In this data set we're looking at the 17 sustainable development goals of the United Nations. Within these 17 goals we saw that the UN's energy goal could be a potentially high value benefactor of data science to help curb the generation of fossil fuels and promote green energy. We chose this topic with the end goal of finding interesting discoveries that could provide actionable data to the every day consumer and help educate their decision to dictate their personal energy needs within current trends and available sources today. We hope that through our visualization of trending energy generation, production, and interactive comparisons an individual may be better informed to make their steps towards a greener future!
 
 
 ```{r setup, include=FALSE}
@@ -44,7 +44,7 @@ energy = read_csv("archive/organised_Gen.csv")
 This data was collected from Kaggle titled [US Energy Generation 2001-2022](https://www.kaggle.com/datasets/kevinmorgado/us-energy-generation-2001-2022), which is a cleaned up data set adapted from the [US Energy Information Administration](https://www.eia.gov/electricity/). The Kaggle CSV was created by Kevin Morgado and is updated annually as new information is uploaded from the Energy Information Administration(EIA).
 
 ## Data Reading and Cleaning
-This data was originally a CSV so we used the read_csv function to turn that CSV into a data set and stored it into an object called "energy". The original column names were messy to type so we created new column names. The energy data set also contained an erroneous ID column that was not necessary so we deleted it. Lastly we created a new column called Date that was a combination of the month and year columns so that we could create time series graphs.
+This data was originally a CSV so we used the read_csv function to turn that CSV into a data set and stored it into an object called "energy". The original column names were messy to type so we created new column names. The energy data set also contained an erroneous ID column that was not necessary so we deleted it. Also, for the majority of our graphs we only used the "Total Electric Power Industry" producer for clarity. Lastly we created a new column called Date that was a combination of the month and year columns so that we could create time series graphs.
 
 ```{r}
 #renaming the columns and removing the "ID" column
@@ -73,6 +73,7 @@ glimpse(energy)
 
 ## US Power Generation
 
+
 ```{r}
 #plot a graph for US avg. power generation per year from years 2001-may 2022
 energy %>% 
@@ -85,7 +86,9 @@ energy %>%
   
 ```
 
-## US Power Generation
+To get a better understanding of the sources of our power generation. 
+
+## Accumulative US Power Generation over last 20+ Years
 
 ```{r fig.height=8, fig.width=5}
 #setting figure boundaries to ensure readability
@@ -107,6 +110,8 @@ fig = energy %>%
 fig
 ```
 
+To better understand the magnitude of power generated over the last 20+ years. We can notice TX is the largest producer of energy.
+
 ## Texas Power Generation
 
 ```{r}
@@ -118,6 +123,11 @@ energy %>%
   geom_smooth(aes(x = year, y = generation/1000000, color = source)) +
   labs(title = "Texas average power generation per year", x = "Year", y = "Power Generation(TWH)") + theme_clean()
 
+```
+
+A look at how TX's power generation varies over the years, TX has a growing total power generation trend. 
+
+```{r}
 #Display the Texas avg power generation per month to show variation of the power usage over the course of a year
 energy %>% 
   filter(producer == "Total Electric Power Industry", state == "TX") %>% 
@@ -127,6 +137,8 @@ energy %>%
   labs(title = "Texas average power generation per month", x = "Month", y = "Power Generation(TWH)") + theme_clean()
 ```
 
+A look at how TX's power generation varies over a year, but with all years shown and we notice that with the hotter months our energy use increases and decreases with cooler months.
+
 ## Texas Power Generation
 
 ```{r fig.height=20}
@@ -134,7 +146,7 @@ energy %>%
 
 ui <- fluidPage(
   # App title ----
-  titlePanel("Texas Total Power Generation Over Time"),
+  titlePanel("State(s) Total Power Generation Over Time"),
   # Sidebar layout with a input and output definitions ----
   sidebarLayout(
     # Sidebar panel for inputs ----
@@ -245,6 +257,9 @@ energy %>%
   labs(title = "States with negative power generation (<-5000)", x ="State", y="Power Generation(TWH)") + theme_clean()
 ```
 
+We found data that doesn’t seem to fit, and after looking up these sources it is due to the need for input energy to be used for the generation of pumped storage. 
+
+
 ## US Power Generation
 
 ```{r}
@@ -324,6 +339,8 @@ energy %>% count(producer)
 energy %>% count(source)
 ```
 
+A look into how we organized the data for the following producer data. 
+
 ## Texas/US Power Distribution Producer Type
 
 ```{r}
@@ -335,7 +352,13 @@ energy %>%
   geom_col(aes(x = producer, y = generation/1000000, fill = source)) +
   labs(title = "US Power Distribution", x= "Producer", y= "Power Generation(TWH)") +
   theme(axis.text.x = element_text(angle = -25, vjust = .5, hjust = .1)) 
+#theme adjusted to create readable labels
+```
 
+To better understand where the distribution of power is coming from for the US in general.
+
+
+```{r}
 # TX Power Source Distribution Per Producer Type.
 ## This is meant to display the same comparison as the US graph, but in Texas. 
 energy %>% 
@@ -344,21 +367,28 @@ energy %>%
   geom_col(aes(x = producer, y = generation/1000000, fill = source)) +
   labs(title = "Texas Power Distribution", x= "Producer", y= "Power Generation(TWH)") +
   theme(axis.text.x = element_text(angle = -25, vjust = .5, hjust = .1)) 
+#theme adjusted to create readable labels
 ```
+
+To better understand where the distribution of power is coming from for TX specifically, we can notice that TX more heavily relies on Independent Power Producers. Probably due to our independent energy grid. 
+
 
 ## Source Power Generation Per Year
 
 ```{r}
 # US Power Source Generation Per Year
-## This is meant to show the change of power sources used in the US on a chronological scale. 
 energy %>% 
   filter(producer != "Total Electric Power Industry", state == "US-TOTAL", source != 'Total', year <= 2021) %>% 
   ggplot() + 
   geom_col(aes(x = year, y = generation/1000000, fill = source)) +
   labs(title = "US Power Generation Per Year", x = "Year", y = "Power Generation(TWH)")
 
+```
+
+This is meant to show the change of power sources used in the US on a chronological scale, here we notice the decline in coal, and growth in natural gas, wind, and solar.
+
+```{r}
 # TX Power Source Generation Per Year
-## This is meant to show the change of power sources used on a chronological scale in Texas.
 energy %>% 
   filter(producer != "Total Electric Power Industry", state == "TX", source != 'Total', year <= 2021) %>% 
   ggplot() + 
@@ -366,20 +396,25 @@ energy %>%
   labs(title = "TX Power Generation Per Year", x = "Year", y = "Power Generation(TWH)")
 ```
 
+This is meant to show the change of power sources used on a chronological scale in Texas, similarly to US but wind has massive growth comparatively.
+
+
 ## Total Power Distribution Over Months
 
 ```{r}
 # Total US power distribution over months
-## Graph is meant to create a visual on power generation over months and used as a control for comparison for states and their power generation over months. This is to set precedent for the next pair of graphs. 
 energy %>% 
   filter(producer == "Total Electric Power Industry", state == 'US-TOTAL', source == 'Total') %>% 
   ggplot(aes(group = month, x = month, y = generation/1000000, fill = month))+
   geom_boxplot() +
   scale_x_continuous(breaks = c(1:12)) + labs(title= "Total US Power distribution over months", x= "Months", y="Power Generation(TWH)" ) 
+```
 
-
+Graph is meant to create a visual on power generation over months and used as a control for comparison for states and their power generation over months. This is to set precedent for the next pair of graphs.
+ 
+ 
+```{r}
 # TX power distribution over months
-## Graph is meant to show Texas power usage in comparison to US. This is to set precedent for the next pair of graphs.
 energy %>% 
   filter(producer == "Total Electric Power Industry", state == 'TX', source == 'Total') %>% 
   ggplot(aes(group = month, x = month, y = generation/1000000, fill = month))+
@@ -388,19 +423,26 @@ energy %>%
   labs(title = 'TX Power Distribution Over Months', x= "Months", y="Power Generation(TWH)") 
 ```
 
+Graph is meant to show Texas power usage in comparison to US. This is to set precedent for the next pair of graphs.
+
+
 ## Power Distributions over months for 2021
 
 ```{r}
 # US Power Distributions over months for 2021
-## This graph shows this use of power sources in the US over a twelve month period in the year 2021.
 energy %>% 
   filter(producer != "Total Electric Power Industry", state == 'US-TOTAL', source != 'Total', year == 2021) %>% 
   ggplot()+
   geom_col(aes(x = month, y = generation/1000000, fill = source)) +
   labs(title = 'US Power Distribution Per Month', x= "Months", y="Power Generation(TWH)")+
   scale_x_continuous(breaks = c(1:12))
+```
+
+This graph shows the use of power sources in the US over a twelve month period in the year 2021, notice the increase of solar between May and October.
+
+
+```{r}
 # TX Power Distributions over months for 2021
-## This graph shows this use of power sources in the TX over a twelve month period in the year 2021.
 energy %>% 
   filter(producer != "Total Electric Power Industry", state == 'TX', source != 'Total', year == 2021) %>% 
   ggplot()+
@@ -409,11 +451,13 @@ energy %>%
   scale_x_continuous(breaks = c(1:12))
 ```
 
-## Energy Sources amoung producer types US
+This graph shows the use of power sources in the TX over a twelve month period in the year 2021, similarly to the US in general but once again a greater percentage of wind power utilized. 
+
+
+## Energy Sources among producer types US
 
 ```{r}
 # US Energy Sources Among Producer Types in 2010
-## This graph is meant to be used in comparison to the graph proceeding it 
 ## displaying the power source distributions among energy producers in the US in 2010
 energy %>% 
   group_by(source, producer) %>% 
@@ -422,9 +466,14 @@ energy %>%
   geom_col(aes(x = producer, y = generation/1000000, fill = source)) +
   labs(title = "US Energy Sources Among Producer Types in 2010", x= "Producer", y="Power Generation(TWH)")+
   theme(axis.text.x = element_text(angle = -15, vjust = 1, hjust = .1)) 
+#theme adjusted to create readable labels
+```
 
+This graph is looking at how the distribution of energy was sourced between producers in 2010 for the US to create a baseline for future change. 
+
+
+```{r}
 # US Energy Sources Among Producer Types in 2020
-## This graph is meant to be used in comparison to the graph proceeding it 
 ## displaying the power source distributions among energy producers in the US in 2020
 energy %>% 
   group_by(source, producer) %>% 
@@ -433,14 +482,16 @@ energy %>%
   geom_col(aes(x = producer, y = generation/1000000, fill = source)) +
   labs(title = "US Energy Sources Among Producer Types in 2020", x= "Producer", y="Power Generation(TWH)")+
   theme(axis.text.x = element_text(angle = -15, vjust = 1, hjust = .1)) 
-
+#theme adjusted to create readable labels
 ```
+
+This graph is comparing the distribution of energy sourced from 2020 in the US to acknowledge change, such as the decrease in coal, increase in natural gas, wind, and solar. 
+
 
 ## Energy Sources amoung producer types TX
 
 ```{r}
 # TX Energy Sources Among Producer Types in 2010
-## This graph is meant to be used in comparison to the graph proceeding it 
 ## displaying the power source distributions among energy producers in Texas in 2010
 energy %>% 
   group_by(source, producer, state) %>% 
@@ -449,8 +500,14 @@ energy %>%
   geom_col(aes(x = producer, y = generation/1000000, fill = source)) +
   labs(title = "TX Energy Sources Among Producer Types in 2010", x= "Producer", y="Power Generation(TWH)")+
   theme(axis.text.x = element_text(angle = -15, vjust = 1, hjust = .1)) 
+#theme adjusted to create readable labels
+```
+
+This graph is looking at how the distribution of energy was sourced between producers in 2010 for Texas to create a baseline for future change
+
+
+```{r}
 # TX Energy Sources Among Producer Types in 2020
-## This graph is meant to be used in comparison to the graph proceeding it 
 ## displaying the power source distributions among energy producers in Texas in 2020
 energy %>% 
   group_by(source, producer, state) %>% 
@@ -459,8 +516,25 @@ energy %>%
   geom_col(aes(x = producer, y = generation/1000000, fill = source)) +
   labs(title = "TX Energy Sources Among Producer Types in 2020", x= "Producer", y="Power Generation(TWH)")+
   theme(axis.text.x = element_text(angle = -15, vjust = 1, hjust = .1)) 
+#theme adjusted to create readable labels
 ```
-## In Conclusion
-- Fossil fuels have been a huge detriment to our environment and we want to educate the audience with insight towards energy's evolution to combat fossil fuels and possibly influence one's decision to enact upon such information (with the exception of traffic blockers and vandals).
-- We ultimately see in this analysis the major decline of coal, the budding rise of green energy, and the titanic gain in natural gas. The US is headed towards a better direction and, though not the most ideal outcomes have been seen, we are in much better shape than in times past and making the great steps for a more sustainable future.
-- For general purposes we this dataset is fit to serve, but there is much more room for discovery within. For instance there is more room for analysis on such as deeper comparisons between energy sources and US comparisons to states. Another possibility is the ability for one to dive deeper and hyper-focus on a states particular energy needs. Perhaps an analysis of industries and their differentiation would be highly informative as well. The only constraint is time and benefit. 
+
+This graph is comparing the distribution of energy sourced from 2010 in Texas to acknowledge change such as the decrease in coal, increase in natural gas, wind, and solar.
+
+# Summarization
+#### Summarize the problem statement
+Investigate the sources of power generation in the US to find relatable trends to the climate action and clean energy aspects of the United Nations Sustainable Developmental Goals, and if this data could be used to work towards the SDG's.
+
+#### Addressing the problem statement
+By analyzing the different sources of power generation, the magnitudes of generation, and the distribution of the power across needs and relating them with those same factors over time in search of trends.
+
+
+#### Interesting insights
+Pumped storage has caveats due to the nature of using energy to store energy to a net loss, but useful when energy generation supply supersedes demand. Solar power is touted as a huge alternative energy source and it has significantly grown but wind power has outpaced its power generation. Coal, has drastically reduced in use, while natural gas has essentially replaced it. Nuclear, conventional hydroelectric, and geothermal have all stayed relatively the same over the past 20 years. 
+
+
+#### Implications 
+We ultimately see in this analysis the major decline of coal, the budding rise of green energy in wind and solar, and the titanic gain in natural gas and while natural gas is a much cleaner burning source compared to the coal it replaces it is a fossil fuel nonetheless. The US is headed towards a better direction but the proportion of energy sourced from fossil fuels is still much higher than desired if we are to combat climate change. We are in much better shape than in times past and making the great steps for a more sustainable future.
+
+#### Limitations
+For general purposes this dataset is fit to serve, but there is much more room for discovery within. For instance there is more room for analysis on such as deeper comparisons between energy sources and US comparisons to states. Another possibility is the ability for one to dive deeper and hyper-focus on a states particular energy needs. Perhaps an analysis of industries and their differentiation would be highly informative as well. While we were not overly limited in our findings, a great way to improve upon them would be to gather relatable economic data on the energy sourced, and thus how many was spent and how efficient that money spent was. Another thing that could be done to improve upon this is create an approximation of the pollution and/or GHG(greenhouse gases) created during the use of these. 
